@@ -1,4 +1,4 @@
-# RakaBima Portfolio - Interactive Desktop Experience
+# Rakabima's Portfolio - Interactive Desktop Experience
 
 This is a unique portfolio website built with [Next.js](https://nextjs.org) that simulates both Windows and Linux desktop environments in the browser. The project showcases skills, projects, and experience through an immersive operating system-like interface.
 
