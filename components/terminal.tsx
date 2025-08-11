@@ -420,7 +420,7 @@ export default function Terminal({ initialPath = '/' }: TerminalProps) {
   }
 
   return (
-    <div className={`h-full bg-black text-green-400 font-mono overflow-hidden flex flex-col ${
+    <div className={`h-full bg-app-bg-secondary text-app-blue font-mono overflow-hidden flex flex-col ${
       isMobile ? 'text-xs p-2' : 'text-sm p-4'
     }`}>
       <div ref={terminalRef} className="flex-1 overflow-y-auto space-y-1 terminal-scroll">
@@ -432,10 +432,10 @@ export default function Terminal({ initialPath = '/' }: TerminalProps) {
             transition={{ duration: 0.1 }}
             className={
               line.type === 'command' 
-                ? 'text-white' 
+                ? 'text-app-text-primary' 
                 : line.type === 'error' 
-                ? 'text-red-400' 
-                : 'text-green-400'
+                ? 'text-desktop-hover' 
+                : 'text-app-blue'
             }
           >
             {line.content}
@@ -444,7 +444,7 @@ export default function Terminal({ initialPath = '/' }: TerminalProps) {
       </div>
       
       <div className="flex items-center mt-2 flex-shrink-0">
-        <span className="text-red-400 mr-2 flex-shrink-0">
+        <span className="text-app-blueAlt mr-2 flex-shrink-0">
           {isMobile ? '$' : `${currentPath}$`}
         </span>
         <input
@@ -453,7 +453,7 @@ export default function Terminal({ initialPath = '/' }: TerminalProps) {
           value={currentCommand}
           onChange={(e) => setCurrentCommand(e.target.value)}
           onKeyDown={handleKeyDown}
-          className="flex-1 bg-transparent outline-none text-green-400 caret-green-400 min-w-0"
+          className="flex-1 bg-transparent outline-none text-app-blue caret-app-blue min-w-0"
           autoFocus
           autoComplete="off"
           spellCheck="false"

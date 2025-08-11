@@ -15,20 +15,20 @@ export default function Home() {
 
   if (!isLoaded) {
     return (
-      <div className="h-screen bg-black flex items-center justify-center">
-        <div className="text-green-400 font-mono text-center">
-          <div className="text-2xl mb-4">BOOTING LINUX SYSTEM...</div>
+      <div className="h-screen bg-app-bg-secondary flex items-center justify-center">
+        <div className="text-app-blue font-mono text-center">
+          <div className="text-2xl mb-4 boot-text">BOOTING SYSTEM...</div>
           <div className="flex space-x-1 justify-center">
             {[...Array(10)].map((_, i) => (
               <div
                 key={i}
-                className="w-4 h-4 bg-green-400 animate-pulse"
+                className="w-4 h-4 bg-gradient-to-r from-app-blue to-app-blueAlt animate-pulse"
                 style={{ animationDelay: `${i * 0.1}s` }}
               />
             ))}
           </div>
           <div className="mt-4 text-sm">Loading Ubuntu 22.04 LTS...</div>
-          <div className="mt-2 text-xs text-gray-500">Welcome to Portfolio Desktop Environment</div>
+          <div className="mt-2 text-xs text-app-blueAlt">Welcome to Rakabima's Desktop</div>
         </div>
       </div>
     )

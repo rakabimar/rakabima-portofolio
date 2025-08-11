@@ -56,103 +56,131 @@ export default function LinuxApplicationLauncher({
     <AnimatePresence>
       {isOpen && (
         <motion.div
-          className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center"
+          className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           onClick={onClose}
         >
           <motion.div
-            className="bg-gray-900 rounded-2xl w-full max-w-4xl h-full max-h-[80vh] overflow-hidden border border-gray-700 shadow-2xl"
+            className="relative bg-black/80 backdrop-blur-md rounded-2xl w-full max-w-4xl h-full max-h-[80vh] overflow-hidden border border-aurora-white/20 shadow-2xl"
             initial={{ scale: 0.9, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             exit={{ scale: 0.9, opacity: 0 }}
             onClick={(e) => e.stopPropagation()}
           >
-            {/* Header */}
-            <div className="p-6 border-b border-gray-700">
-              <div className="flex items-center justify-between mb-4">
-                <h2 className="text-2xl font-bold text-white">Applications</h2>
-                <button
-                  onClick={onClose}
-                  className="text-gray-400 hover:text-white transition-colors"
-                >
-                  <X className="w-6 h-6" />
-                </button>
-              </div>
+            {/* Subtle Aurora Accent Lines */}
+            <div className="absolute inset-0 pointer-events-none">
+              {/* Top accent line */}
+              <div 
+                className="absolute top-0 left-0 right-0 h-px opacity-30"
+                style={{
+                  background: `linear-gradient(90deg, transparent 0%, rgba(59, 143, 219, 0.6) 50%, transparent 100%)`
+                }} 
+              />
               
-              {/* Search */}
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
-                <input
-                  type="text"
-                  placeholder="Search applications..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full pl-10 pr-4 py-3 bg-gray-800 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-orange-500"
-                />
-              </div>
+              {/* Subtle corner gradients */}
+              <div 
+                className="absolute top-0 left-0 w-32 h-32 opacity-10"
+                style={{
+                  background: `radial-gradient(circle at 0% 0%, rgba(220, 96, 63, 0.3) 0%, transparent 70%)`
+                }} 
+              />
+              <div 
+                className="absolute bottom-0 right-0 w-32 h-32 opacity-10"
+                style={{
+                  background: `radial-gradient(circle at 100% 100%, rgba(59, 143, 219, 0.3) 0%, transparent 70%)`
+                }} 
+              />
             </div>
 
-            <div className="flex h-full">
-              {/* Categories Sidebar */}
-              <div className="w-48 bg-gray-800 border-r border-gray-700 p-4">
-                <div className="space-y-2">
+            {/* Content with relative positioning */}
+            <div className="relative z-10">
+              {/* Header */}
+              <div className="p-6 border-b border-aurora-white/10">
+                <div className="flex items-center justify-between mb-4">
+                  <h2 className="text-2xl font-bold text-aurora-white">Applications</h2>
                   <button
-                    onClick={() => setSelectedCategory(null)}
-                    className={`w-full text-left px-3 py-2 rounded-lg transition-colors ${
-                      selectedCategory === null
-                        ? 'bg-orange-500 text-white'
-                        : 'text-gray-300 hover:bg-gray-700'
-                    }`}
+                    onClick={onClose}
+                    className="text-aurora-white/60 hover:text-aurora-coral transition-colors"
                   >
-                    All Applications
+                    <X className="w-6 h-6" />
                   </button>
-                  {categories.map((category) => (
-                    <button
-                      key={category}
-                      onClick={() => setSelectedCategory(category)}
-                      className={`w-full text-left px-3 py-2 rounded-lg transition-colors ${
-                        selectedCategory === category
-                          ? 'bg-orange-500 text-white'
-                          : 'text-gray-300 hover:bg-gray-700'
-                      }`}
-                    >
-                      {categoryNames[category as keyof typeof categoryNames]}
-                    </button>
-                  ))}
+                </div>
+                
+                {/* Search */}
+                <div className="relative">
+                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-aurora-white/40" />
+                  <input
+                    type="text"
+                    placeholder="Search applications..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    className="w-full pl-10 pr-4 py-3 bg-white/5 border border-aurora-white/20 rounded-lg text-aurora-white placeholder-aurora-white/40 focus:outline-none focus:border-aurora-orange focus:ring-2 focus:ring-aurora-orange/20 transition-all"
+                  />
                 </div>
               </div>
 
-              {/* Applications Grid */}
-              <div className="flex-1 p-6 overflow-y-auto">
-                <div className="grid grid-cols-4 gap-6">
-                  {filteredApps.map((app) => (
-                    <motion.button
-                      key={app.id}
-                      className="flex flex-col items-center p-4 rounded-xl hover:bg-gray-800 transition-colors group"
-                      whileHover={{ scale: 1.05 }}
-                      whileTap={{ scale: 0.95 }}
-                      onClick={() => handleAppClick(app.id)}
+              <div className="flex h-full">
+                {/* Categories Sidebar */}
+                <div className="w-48 bg-black/40 border-r border-aurora-white/10 p-4">
+                  <div className="space-y-2">
+                    <button
+                      onClick={() => setSelectedCategory(null)}
+                      className={`w-full text-left px-3 py-2 rounded-lg transition-colors text-sm font-medium ${
+                        selectedCategory === null
+                          ? 'bg-aurora-orange text-aurora-white border border-aurora-orange/50 shadow-sm'
+                          : 'text-aurora-white/80 hover:bg-aurora-orange/20 hover:text-aurora-coral'
+                      }`}
                     >
-                      <div className="w-16 h-16 bg-gray-700 rounded-2xl flex items-center justify-center mb-3 group-hover:bg-orange-500 transition-colors">
-                        <div className="text-gray-300 group-hover:text-white transition-colors">
-                          {app.icon}
-                        </div>
-                      </div>
-                      <span className="text-white text-sm font-medium text-center leading-tight">
-                        {app.title}
-                      </span>
-                    </motion.button>
-                  ))}
-                </div>
-                
-                {filteredApps.length === 0 && (
-                  <div className="text-center text-gray-400 mt-12">
-                    <Search className="w-12 h-12 mx-auto mb-4 opacity-50" />
-                    <p>No applications found</p>
+                      All Applications
+                    </button>
+                    {categories.map((category) => (
+                      <button
+                        key={category}
+                        onClick={() => setSelectedCategory(category)}
+                        className={`w-full text-left px-3 py-2 rounded-lg transition-colors text-sm font-medium ${
+                          selectedCategory === category
+                            ? 'bg-aurora-orange text-aurora-white border border-aurora-orange/50 shadow-sm'
+                            : 'text-aurora-white/80 hover:bg-aurora-orange/20 hover:text-aurora-coral'
+                        }`}
+                      >
+                        {categoryNames[category as keyof typeof categoryNames]}
+                      </button>
+                    ))}
                   </div>
-                )}
+                </div>
+
+                {/* Applications Grid */}
+                <div className="flex-1 p-6 overflow-y-auto">
+                  <div className="grid grid-cols-4 gap-6">
+                    {filteredApps.map((app) => (
+                      <motion.button
+                        key={app.id}
+                        className="flex flex-col items-center p-4 rounded-xl hover:bg-aurora-orange/20 border border-transparent hover:border-aurora-orange/50 transition-all group"
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
+                        onClick={() => handleAppClick(app.id)}
+                      >
+                        <div className="w-16 h-16 bg-white/5 rounded-2xl flex items-center justify-center mb-3 group-hover:bg-gradient-to-br group-hover:from-aurora-orange/20 group-hover:to-aurora-coral/20 transition-all duration-300 border border-aurora-white/10">
+                          <div className="text-aurora-white group-hover:text-aurora-coral transition-colors">
+                            {app.icon}
+                          </div>
+                        </div>
+                        <span className="text-aurora-white text-sm font-medium text-center leading-tight">
+                          {app.title}
+                        </span>
+                      </motion.button>
+                    ))}
+                  </div>
+                  
+                  {filteredApps.length === 0 && (
+                    <div className="text-center text-aurora-white/40 mt-12">
+                      <Search className="w-12 h-12 mx-auto mb-4 opacity-50" />
+                      <p>No applications found</p>
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
           </motion.div>

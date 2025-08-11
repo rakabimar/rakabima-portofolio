@@ -259,15 +259,9 @@ export default function Desktop() {
 
   // Desktop interface
   return (
-    <div className="h-screen w-full bg-gradient-to-br from-gray-800 via-gray-900 to-black relative overflow-hidden">
-      {/* Subtle pattern overlay */}
-      <div 
-        className="absolute inset-0 opacity-5"
-        style={{
-          backgroundImage: `radial-gradient(circle at 1px 1px, rgba(255,255,255,0.15) 1px, transparent 0)`,
-          backgroundSize: '20px 20px'
-        }}
-      />
+    <div className="h-screen w-full bg-gradient-to-br from-desktop-bg-primary to-desktop-bg-secondary relative overflow-hidden">
+      {/* Desktop subtle pattern */}
+      <div className="absolute inset-0 opacity-20 desktop-pattern" />
 
       {/* Desktop Icons */}
       {desktopIconsWithPositions.map((icon) => (
@@ -279,11 +273,11 @@ export default function Desktop() {
           whileTap={{ scale: 0.95 }}
           onDoubleClick={() => openApp(icon.id)}
         >
-          <div className="flex flex-col items-center p-3 rounded-lg hover:bg-white/10 transition-all duration-200 min-w-[80px]">
-            <div className="text-white mb-2 group-hover:text-blue-400 transition-colors drop-shadow-lg">
+          <div className="flex flex-col items-center p-3 rounded-lg hover:bg-desktop-hover/20 hover:border hover:border-desktop-hover/50 transition-all duration-200 min-w-[80px]">
+            <div className="text-white mb-2 group-hover:text-desktop-hover transition-colors drop-shadow-lg">
               {icon.icon}
             </div>
-            <span className="text-white text-xs font-medium group-hover:text-blue-400 transition-colors text-center drop-shadow-lg">
+            <span className="text-white text-xs font-medium group-hover:text-desktop-hover transition-colors text-center drop-shadow-lg">
               {icon.title}
             </span>
           </div>
@@ -309,14 +303,14 @@ export default function Desktop() {
         </Window>
       ))}
 
-      {/* Linux-style Panel/Taskbar */}
-      <div className="absolute bottom-0 left-0 right-0 h-14 bg-gray-900/95 backdrop-blur-sm border-t border-gray-700/50 flex items-center justify-between px-4">
+      {/* Windows-style Panel/Taskbar - Desktop Shell Theme */}
+      <div className="absolute bottom-0 left-0 right-0 h-14 bg-desktop-panel desktop-glass border-t border-desktop-border/50 flex items-center justify-between px-4">
         {/* Left side - App launcher and open apps */}
         <div className="flex items-center space-x-2">
           {/* App launcher button */}
-          <button className="flex items-center justify-center w-10 h-10 bg-blue-600 hover:bg-blue-700 rounded transition-colors">
-            <div className="w-6 h-6 bg-white rounded-sm flex items-center justify-center">
-              <div className="w-3 h-3 bg-blue-600 rounded-sm"></div>
+          <button className="flex items-center justify-center w-10 h-10 bg-desktop-hover hover:bg-desktop-hover/80 rounded transition-colors">
+            <div className="w-6 h-6 bg-black rounded-sm flex items-center justify-center">
+              <div className="w-3 h-3 bg-white rounded-sm"></div>
             </div>
           </button>
           
@@ -326,8 +320,8 @@ export default function Desktop() {
               key={app.id}
               className={`flex items-center space-x-2 px-3 py-2 rounded text-sm font-medium transition-all ${
                 activeApp === app.id 
-                  ? 'bg-blue-600 text-white shadow-lg' 
-                  : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+                  ? 'bg-desktop-hover text-white shadow-lg' 
+                  : 'bg-gray-700 text-desktop-inactive hover:bg-gray-600'
               }`}
               onClick={() => bringToFront(app.id)}
             >
@@ -338,18 +332,18 @@ export default function Desktop() {
         </div>
 
         {/* Right side - System tray */}
-        <div className="flex items-center space-x-3 text-gray-300">
+        <div className="flex items-center space-x-3 text-desktop-inactive">
           <div className="flex items-center space-x-2 text-sm">
             <Wifi className="w-4 h-4" />
             <Volume2 className="w-4 h-4" />
             <Battery className="w-4 h-4" />
           </div>
-          <div className="h-6 w-px bg-gray-600"></div>
+          <div className="h-6 w-px bg-desktop-border"></div>
           <div className="flex items-center space-x-1 text-sm font-mono">
             <Clock className="w-4 h-4" />
             <div className="flex flex-col items-end">
               <span>{currentTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
-              <span className="text-xs text-gray-400">
+              <span className="text-xs text-desktop-inactive">
                 {currentTime.toLocaleDateString([], { month: 'short', day: 'numeric' })}
               </span>
             </div>

@@ -95,11 +95,12 @@ export default function LinuxDesktop() {
 
   // Desktop icons (fewer on desktop, more in launcher)
   const desktopIcons: Omit<DesktopIcon, 'position'>[] = [
+    { id: "about", title: "About Me", icon: <User className="w-8 h-8" />, category: "favorites" },
+    { id: "projects", title: "Projects", icon: <Code className="w-12 h-12" />, category: "development" },
+    { id: "email", title: "Mail", icon: <Mail className="w-12 h-12" />, category: "internet" },
     { id: "file-manager", title: "Files", icon: <Folder className="w-12 h-12" />, category: "system" },
     { id: "terminal", title: "Terminal", icon: <TerminalIcon className="w-12 h-12" />, category: "development" },
-    { id: "ai-chat", title: "AI Chat", icon: <Bot className="w-12 h-12" />, category: "internet" },
-    { id: "projects", title: "Projects", icon: <Code className="w-12 h-12" />, category: "development" },
-    { id: "email", title: "Mail", icon: <Mail className="w-12 h-12" />, category: "internet" }
+    { id: "ai-chat", title: "AI Chat", icon: <Bot className="w-12 h-12" />, category: "internet" }
   ]
 
   // All applications for launcher
@@ -309,15 +310,42 @@ export default function LinuxDesktop() {
 
   // Desktop interface
   return (
-    <div className="h-screen w-full bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900 relative overflow-hidden">
-      {/* Ubuntu-style wallpaper pattern */}
+    <div className="h-screen w-full relative overflow-hidden desktop-background">
+      {/* Animated Aurora Background */}
+      <div className="absolute inset-0">
+        {/* Base aurora gradient with animation */}
+        <div 
+          className="absolute inset-0 animate-aurora-pulse"
+          style={{
+            background: `
+              radial-gradient(ellipse at 30% 70%, rgba(220, 96, 63, 0.15) 0%, transparent 70%),
+              radial-gradient(ellipse at 70% 30%, rgba(59, 143, 219, 0.12) 0%, transparent 70%)
+            `
+          }} 
+        />
+        
+        {/* Moving aurora waves */}
+        <div 
+          className="absolute inset-0 animate-pulse"
+          style={{
+            background: `
+              radial-gradient(ellipse at 40% 80%, rgba(220, 96, 63, 0.08) 0%, transparent 60%),
+              radial-gradient(ellipse at 80% 20%, rgba(59, 143, 219, 0.06) 0%, transparent 60%)
+            `,
+            animationDuration: '6s',
+            animationDelay: '2s'
+          }} 
+        />
+      </div>
+
+      {/* Animated dot pattern */}
       <div 
-        className="absolute inset-0 opacity-20"
+        className="absolute inset-0 opacity-20 animate-fade-in" 
         style={{
-          backgroundImage: `radial-gradient(circle at 20% 50%, rgba(255,255,255,0.1) 0%, transparent 50%), 
-                           radial-gradient(circle at 80% 20%, rgba(255,255,255,0.1) 0%, transparent 50%),
-                           radial-gradient(circle at 40% 80%, rgba(255,255,255,0.1) 0%, transparent 50%)`,
-        }}
+          backgroundImage: 'radial-gradient(circle at 1px 1px, rgba(59, 143, 219, 0.1) 1px, transparent 0)',
+          backgroundSize: '20px 20px',
+          animation: 'drift 20s ease-in-out infinite'
+        }} 
       />
 
       {/* Desktop Icons */}
@@ -330,11 +358,11 @@ export default function LinuxDesktop() {
           whileTap={{ scale: 0.95 }}
           onDoubleClick={() => openApp(icon.id)}
         >
-          <div className="flex flex-col items-center p-3 rounded-lg hover:bg-white/10 transition-all duration-200 min-w-[80px]">
-            <div className="text-white mb-2 group-hover:text-orange-300 transition-colors drop-shadow-lg">
+          <div className="flex flex-col items-center p-3 rounded-lg hover:bg-aurora-orange/20 hover:border hover:border-aurora-orange/50 transition-all duration-200 min-w-[80px]">
+            <div className="text-aurora-white mb-2 group-hover:text-aurora-coral transition-colors drop-shadow-lg">
               {icon.icon}
             </div>
-            <span className="text-white text-xs font-medium group-hover:text-orange-300 transition-colors text-center drop-shadow-lg max-w-[80px] leading-tight">
+            <span className="text-aurora-white text-xs font-medium group-hover:text-aurora-coral transition-colors text-center drop-shadow-lg max-w-[80px] leading-tight">
               {icon.title}
             </span>
           </div>
@@ -360,35 +388,35 @@ export default function LinuxDesktop() {
         </LinuxWindow>
       ))}
 
-      {/* Ubuntu-style Top Panel */}
-      <div className="absolute top-0 left-0 right-0 h-8 bg-gray-800/95 backdrop-blur-sm border-b border-gray-700/50 flex items-center justify-between px-4 text-white text-sm">
+      {/* Ubuntu-style Top Panel - Desktop Theme */}
+      <div className="absolute top-0 left-0 right-0 h-8 bg-desktop-secondary/90 backdrop-blur-sm border-b border-desktop-border flex items-center justify-between px-4 text-aurora-white text-sm">
         {/* Left side - Activities and App Menu */}
         <div className="flex items-center space-x-4">
           <button 
-            className="px-3 py-1 hover:bg-white/10 rounded transition-colors font-medium"
+            className="px-3 py-1 hover:bg-aurora-orange/20 hover:text-aurora-coral rounded transition-colors font-medium"
             onClick={() => setShowLauncher(true)}
           >
             Activities
           </button>
-          <div className="text-gray-300">
+          <div className="text-desktop-muted">
             {currentTime.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })}
           </div>
         </div>
 
         {/* Center - Current app title */}
-        <div className="flex-1 text-center">
+        <div className="flex-1 text-center text-aurora-white">
           {activeApp && openApps.find(app => app.id === activeApp)?.title}
         </div>
 
         {/* Right side - System indicators */}
         <div className="flex items-center space-x-3">
-          <div className="flex items-center space-x-2">
+          <div className="flex items-center space-x-2 text-desktop-muted hover:text-aurora-white transition-colors">
             <Wifi className="w-4 h-4" />
             <Volume2 className="w-4 h-4" />
             <Battery className="w-4 h-4" />
           </div>
           <button 
-            className="hover:bg-white/10 px-2 py-1 rounded transition-colors"
+            className="hover:bg-aurora-orange/20 hover:text-aurora-coral px-2 py-1 rounded transition-colors"
             onClick={() => setShowNotifications(!showNotifications)}
             title={`${currentTime.toLocaleDateString()} ${currentTime.toLocaleTimeString()}`}
           >
@@ -406,68 +434,207 @@ export default function LinuxDesktop() {
         </div>
       </div>
 
-      {/* Ubuntu-style Bottom Dock/Panel */}
+      {/* Ubuntu-style Bottom Dock/Panel - Desktop Theme */}
       <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 mb-4">
-        <div className="bg-gray-800/90 backdrop-blur-sm rounded-2xl px-3 py-2 border border-gray-600/50 shadow-2xl">
+        <motion.div 
+          className="bg-desktop-secondary/90 backdrop-blur-sm rounded-2xl px-3 py-2 border border-desktop-border shadow-desktop"
+          layout
+          transition={{ duration: 0.3, ease: "easeInOut" }}
+        >
           <div className="flex items-center space-x-1">
             {/* App launcher */}
-            <button
-              className="w-12 h-12 bg-orange-500 hover:bg-orange-600 rounded-xl flex items-center justify-center transition-colors shadow-lg"
+            <motion.button
+              className="w-12 h-12 bg-app-accent hover:bg-aurora-orange rounded-xl flex items-center justify-center transition-all shadow-lg"
               onClick={() => setShowLauncher(true)}
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              layout
             >
-              <Grid3X3 className="w-6 h-6 text-white" />
-            </button>
+              <Grid3X3 className="w-6 h-6 text-aurora-white" />
+            </motion.button>
             
             {/* Open apps in dock */}
-            {openApps.map((app) => (
-              <button
-                key={app.id}
-                className={`w-12 h-12 rounded-xl flex items-center justify-center transition-all shadow-lg ${
-                  activeApp === app.id 
-                    ? 'bg-orange-500 text-white scale-110' 
-                    : 'bg-gray-700 text-gray-300 hover:bg-gray-600 hover:scale-105'
-                }`}
-                onClick={() => bringToFront(app.id)}
-                title={app.title}
-              >
-                <div className="w-6 h-6 flex items-center justify-center">{app.icon}</div>
-              </button>
-            ))}
+            <AnimatePresence mode="popLayout">
+              {openApps.map((app) => (
+                <motion.button
+                  key={app.id}
+                  className={`w-12 h-12 rounded-xl flex items-center justify-center transition-all shadow-lg ${
+                    activeApp === app.id 
+                      ? 'bg-app-accent text-aurora-white scale-110' 
+                      : 'bg-desktop-primary hover:bg-aurora-orange/20 hover:scale-105 text-desktop-muted hover:text-aurora-coral'
+                  }`}
+                  onClick={() => bringToFront(app.id)}
+                  title={app.title}
+                  initial={{ opacity: 0, scale: 0.3, x: -20 }}
+                  animate={{ 
+                    opacity: 1, 
+                    scale: activeApp === app.id ? 1.1 : 1, 
+                    x: 0 
+                  }}
+                  exit={{ 
+                    opacity: 0, 
+                    scale: 0.3, 
+                    x: -20,
+                    transition: { duration: 0.2 }
+                  }}
+                  whileHover={{ scale: activeApp === app.id ? 1.15 : 1.05 }}
+                  whileTap={{ scale: activeApp === app.id ? 1.05 : 0.95 }}
+                  layout
+                  transition={{ 
+                    layout: { duration: 0.3, ease: "easeInOut" },
+                    default: { duration: 0.3, ease: "easeOut" }
+                  }}
+                >
+                  <motion.div 
+                    className="w-6 h-6 flex items-center justify-center"
+                    initial={{ rotate: -180 }}
+                    animate={{ rotate: 0 }}
+                    transition={{ duration: 0.4, ease: "easeOut" }}
+                  >
+                    {app.icon}
+                  </motion.div>
+                </motion.button>
+              ))}
+            </AnimatePresence>
             
-            {/* Separator only if there are open apps */}
-            {openApps.length > 0 && <div className="w-px h-8 bg-gray-600 mx-1"></div>}
+            {/* Separator with animation */}
+            <AnimatePresence>
+              {(openApps.length > 0 || !openApps.some(app => ['about', 'projects', 'file-manager', 'email', 'terminal', 'ai-chat'].includes(app.id))) && (
+                <motion.div 
+                  className="w-px h-8 bg-desktop-border mx-1"
+                  initial={{ opacity: 0, scaleY: 0 }}
+                  animate={{ opacity: 1, scaleY: 1 }}
+                  exit={{ opacity: 0, scaleY: 0 }}
+                  transition={{ duration: 0.2, delay: 0.1 }}
+                  layout
+                />
+              )}
+            </AnimatePresence>
             
-            {/* Favorites */}
-            <button
-              className="w-12 h-12 bg-gray-700 hover:bg-gray-600 rounded-xl flex items-center justify-center transition-colors shadow-lg"
-              onClick={() => openApp('file-manager')}
-              title="Files"
-            >
-              <Folder className="w-6 h-6 text-gray-300" />
-            </button>
-            <button
-              className="w-12 h-12 bg-gray-700 hover:bg-gray-600 rounded-xl flex items-center justify-center transition-colors shadow-lg"
-              onClick={() => openApp('email')}
-              title="Mail"
-            >
-              <Mail className="w-6 h-6 text-gray-300" />
-            </button>
-            <button
-              className="w-12 h-12 bg-gray-700 hover:bg-gray-600 rounded-xl flex items-center justify-center transition-colors shadow-lg"
-              onClick={() => openApp('terminal')}
-              title="Terminal"
-            >
-              <TerminalIcon className="w-6 h-6 text-gray-300" />
-            </button>
-            <button
-              className="w-12 h-12 bg-gray-700 hover:bg-gray-600 rounded-xl flex items-center justify-center transition-colors shadow-lg"
-              onClick={() => openApp('ai-chat')}
-              title="AI Chat"
-            >
-              <Bot className="w-6 h-6 text-gray-300" />
-            </button>
+            {/* Quick Access Favorites - Only show if app is not open */}
+            <AnimatePresence mode="popLayout">
+              {!openApps.some(app => app.id === 'about') && (
+                <motion.button
+                  className="w-12 h-12 bg-desktop-primary hover:bg-aurora-orange/20 rounded-xl flex items-center justify-center transition-all shadow-lg group"
+                  onClick={() => openApp('about')}
+                  title="About Me"
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  initial={{ opacity: 0, scale: 0.3, x: -20 }}
+                  animate={{ opacity: 1, scale: 1, x: 0 }}
+                  exit={{ opacity: 0, scale: 0.3, x: -20, transition: { duration: 0.2 } }}
+                  layout
+                  transition={{ 
+                    layout: { duration: 0.3, ease: "easeInOut" },
+                    default: { duration: 0.3, ease: "easeOut" }
+                  }}
+                >
+                  <User className="w-6 h-6 text-desktop-muted group-hover:text-aurora-coral transition-colors" />
+                </motion.button>
+              )}
+              
+              {!openApps.some(app => app.id === 'projects') && (
+                <motion.button
+                  className="w-12 h-12 bg-desktop-primary hover:bg-aurora-orange/20 rounded-xl flex items-center justify-center transition-all shadow-lg group"
+                  onClick={() => openApp('projects')}
+                  title="Projects"
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  initial={{ opacity: 0, scale: 0.3, x: -20 }}
+                  animate={{ opacity: 1, scale: 1, x: 0 }}
+                  exit={{ opacity: 0, scale: 0.3, x: -20, transition: { duration: 0.2 } }}
+                  layout
+                  transition={{ 
+                    layout: { duration: 0.3, ease: "easeInOut" },
+                    default: { duration: 0.3, ease: "easeOut" }
+                  }}
+                >
+                  <Code className="w-6 h-6 text-desktop-muted group-hover:text-aurora-coral transition-colors" />
+                </motion.button>
+              )}
+              
+              {!openApps.some(app => app.id === 'file-manager') && (
+                <motion.button
+                  className="w-12 h-12 bg-desktop-primary hover:bg-aurora-orange/20 rounded-xl flex items-center justify-center transition-all shadow-lg group"
+                  onClick={() => openApp('file-manager')}
+                  title="Files"
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  initial={{ opacity: 0, scale: 0.3, x: -20 }}
+                  animate={{ opacity: 1, scale: 1, x: 0 }}
+                  exit={{ opacity: 0, scale: 0.3, x: -20, transition: { duration: 0.2 } }}
+                  layout
+                  transition={{ 
+                    layout: { duration: 0.3, ease: "easeInOut" },
+                    default: { duration: 0.3, ease: "easeOut" }
+                  }}
+                >
+                  <Folder className="w-6 h-6 text-desktop-muted group-hover:text-aurora-coral transition-colors" />
+                </motion.button>
+              )}
+              
+              {!openApps.some(app => app.id === 'email') && (
+                <motion.button
+                  className="w-12 h-12 bg-desktop-primary hover:bg-aurora-orange/20 rounded-xl flex items-center justify-center transition-all shadow-lg group"
+                  onClick={() => openApp('email')}
+                  title="Mail"
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  initial={{ opacity: 0, scale: 0.3, x: -20 }}
+                  animate={{ opacity: 1, scale: 1, x: 0 }}
+                  exit={{ opacity: 0, scale: 0.3, x: -20, transition: { duration: 0.2 } }}
+                  layout
+                  transition={{ 
+                    layout: { duration: 0.3, ease: "easeInOut" },
+                    default: { duration: 0.3, ease: "easeOut" }
+                  }}
+                >
+                  <Mail className="w-6 h-6 text-desktop-muted group-hover:text-aurora-coral transition-colors" />
+                </motion.button>
+              )}
+              
+              {!openApps.some(app => app.id === 'terminal') && (
+                <motion.button
+                  className="w-12 h-12 bg-desktop-primary hover:bg-aurora-orange/20 rounded-xl flex items-center justify-center transition-all shadow-lg group"
+                  onClick={() => openApp('terminal')}
+                  title="Terminal"
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  initial={{ opacity: 0, scale: 0.3, x: -20 }}
+                  animate={{ opacity: 1, scale: 1, x: 0 }}
+                  exit={{ opacity: 0, scale: 0.3, x: -20, transition: { duration: 0.2 } }}
+                  layout
+                  transition={{ 
+                    layout: { duration: 0.3, ease: "easeInOut" },
+                    default: { duration: 0.3, ease: "easeOut" }
+                  }}
+                >
+                  <TerminalIcon className="w-6 h-6 text-desktop-muted group-hover:text-aurora-coral transition-colors" />
+                </motion.button>
+              )}
+              
+              {!openApps.some(app => app.id === 'ai-chat') && (
+                <motion.button
+                  className="w-12 h-12 bg-desktop-primary hover:bg-aurora-orange/20 rounded-xl flex items-center justify-center transition-all shadow-lg group"
+                  onClick={() => openApp('ai-chat')}
+                  title="AI Chat"
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  initial={{ opacity: 0, scale: 0.3, x: -20 }}
+                  animate={{ opacity: 1, scale: 1, x: 0 }}
+                  exit={{ opacity: 0, scale: 0.3, x: -20, transition: { duration: 0.2 } }}
+                  layout
+                  transition={{ 
+                    layout: { duration: 0.3, ease: "easeInOut" },
+                    default: { duration: 0.3, ease: "easeOut" }
+                  }}
+                >
+                  <Bot className="w-6 h-6 text-desktop-muted group-hover:text-aurora-coral transition-colors" />
+                </motion.button>
+              )}
+            </AnimatePresence>
           </div>
-        </div>
+        </motion.div>
       </div>
 
       {/* Application Launcher */}

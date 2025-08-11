@@ -123,8 +123,8 @@ export default function LinuxWindow({
 
   return (
     <motion.div
-      className={`absolute bg-white border border-gray-300 rounded-lg shadow-2xl overflow-hidden ${
-        isActive ? 'ring-2 ring-orange-500' : ''
+      className={`absolute bg-desktop-primary border rounded-lg shadow-aurora overflow-hidden ${
+        isActive ? 'ring-2 ring-app-accent border-app-accent/50' : 'border-desktop-border'
       }`}
       style={{ ...windowStyle, zIndex }}
       initial={{ opacity: 0, scale: 0.95 }}
@@ -132,52 +132,52 @@ export default function LinuxWindow({
       exit={{ opacity: 0, scale: 0.95 }}
       onMouseDown={handleMouseDown}
     >
-      {/* Linux-style Window Header */}
+      {/* Linux-style Window Header - Desktop Theme */}
       <div
         ref={dragRef}
         className={`window-header h-10 flex items-center justify-between px-4 cursor-move select-none ${
           isActive 
-            ? 'bg-gradient-to-r from-orange-500 to-orange-600' 
-            : 'bg-gradient-to-r from-gray-400 to-gray-500'
+            ? 'bg-gradient-to-r from-app-accent to-app-accent/80' 
+            : 'bg-gradient-to-r from-desktop-secondary to-desktop-secondary/80'
         }`}
       >
         <div className="flex items-center space-x-3">
-          {icon && <div className="w-6 h-6 text-white flex items-center justify-center flex-shrink-0">{icon}</div>}
-          <span className="text-white text-sm font-medium">{title}</span>
+          {icon && <div className="w-6 h-6 text-aurora-white flex items-center justify-center flex-shrink-0">{icon}</div>}
+          <span className="text-aurora-white text-sm font-medium">{title}</span>
         </div>
         
         {/* Linux-style window controls */}
         <div className="flex items-center space-x-1">
           <button
-            className="w-6 h-6 bg-gray-200 hover:bg-gray-300 rounded-full flex items-center justify-center transition-colors"
+            className="w-6 h-6 bg-desktop-muted hover:bg-aurora-orange rounded-full flex items-center justify-center transition-colors"
             onClick={handleMinimize}
             title="Minimize"
           >
-            <Minus className="w-3 h-3 text-gray-700" />
+            <Minus className="w-3 h-3 text-aurora-white" />
           </button>
           <button
-            className="w-6 h-6 bg-gray-200 hover:bg-gray-300 rounded-full flex items-center justify-center transition-colors"
+            className="w-6 h-6 bg-desktop-muted hover:bg-aurora-orange rounded-full flex items-center justify-center transition-colors"
             onClick={toggleMaximize}
             title={isMaximized ? "Restore" : "Maximize"}
           >
-            <Square className="w-2 h-2 text-gray-700" />
+            <Square className="w-2 h-2 text-aurora-white" />
           </button>
           <button
-            className="w-6 h-6 bg-red-500 hover:bg-red-600 rounded-full flex items-center justify-center transition-colors"
+            className="w-6 h-6 bg-aurora-coral hover:bg-aurora-coral/80 rounded-full flex items-center justify-center transition-colors"
             onClick={onClose}
             title="Close"
           >
-            <X className="w-3 h-3 text-white" />
+            <X className="w-3 h-3 text-aurora-white" />
           </button>
         </div>
       </div>
 
-      {/* Window Content */}
-      <div className="h-full bg-white text-gray-900 overflow-hidden" style={{ height: 'calc(100% - 40px)' }}>
+      {/* Window Content - App Theme */}
+      <div className="h-full bg-gradient-to-br from-app-primary to-app-secondary text-aurora-white overflow-hidden" style={{ height: 'calc(100% - 40px)' }}>
         {children}
       </div>
 
-      {/* Resize Handle */}
+      {/* Resize Handle - Desktop Theme */}
       {!isMaximized && (
         <div
           className="absolute bottom-0 right-0 w-4 h-4 cursor-se-resize"
@@ -187,7 +187,7 @@ export default function LinuxWindow({
             onFocus()
           }}
         >
-          <div className="w-full h-full bg-orange-500/30 hover:bg-orange-500/50 transition-colors" />
+          <div className="w-full h-full bg-app-accent/30 hover:bg-app-accent/50 transition-colors" />
         </div>
       )}
     </motion.div>

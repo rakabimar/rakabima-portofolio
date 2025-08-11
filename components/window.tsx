@@ -51,7 +51,7 @@ export default function Window({
     if (isDragging && !isMaximized) {
       setPosition(prev => ({
         x: Math.max(0, Math.min(window.innerWidth - size.width, prev.x + e.movementX)),
-        y: Math.max(0, Math.min(window.innerHeight - size.height - 48, prev.y + e.movementY))
+        y: Math.max(32, Math.min(window.innerHeight - size.height - 48, prev.y + e.movementY))
       }))
     }
     if (isResizing && !isMaximized) {
@@ -74,8 +74,8 @@ export default function Window({
       setIsMaximized(false)
     } else {
       setPreviousState({ position, size })
-      setPosition({ x: 0, y: 0 })
-      setSize({ width: window.innerWidth, height: window.innerHeight - 56 }) // Account for taskbar
+      setPosition({ x: 0, y: 32 })
+      setSize({ width: window.innerWidth, height: window.innerHeight - 80 }) // Account for top panel and taskbar
       setIsMaximized(true)
     }
   }
@@ -111,8 +111,20 @@ export default function Window({
     }
   }, [id, handleRestore])
 
+  // Add event listeners for mouse events
+  useEffect(() => {
+    if (isDragging || isResizing) {
+      document.addEventListener('mousemove', handleMouseMove)
+      document.addEventListener('mouseup', handleMouseUp)
+      return () => {
+        document.removeEventListener('mousemove', handleMouseMove)
+        document.removeEventListener('mouseup', handleMouseUp)
+      }
+    }
+  }, [isDragging, isResizing, handleMouseMove, handleMouseUp])
+
   const windowStyle = isMaximized 
-    ? { left: 0, top: 0, width: '100vw', height: 'calc(100vh - 56px)' }
+    ? { left: 0, top: 32, width: '100vw', height: 'calc(100vh - 80px)' }
     : { left: position.x, top: position.y, width: size.width, height: size.height }
 
   if (isMinimized) {
@@ -121,8 +133,8 @@ export default function Window({
 
   return (
     <motion.div
-      className={`absolute bg-gray-900 border border-red-500/50 rounded-lg shadow-2xl overflow-hidden ${
-        isActive ? 'ring-2 ring-red-500' : ''
+      className={`absolute bg-desktop-primary border rounded-lg shadow-aurora overflow-hidden ${
+        isActive ? 'ring-2 ring-app-accent border-app-accent/50' : 'border-desktop-border'
       }`}
       style={{ ...windowStyle, zIndex }}
       initial={{ opacity: 0, scale: 0.9 }}
@@ -130,43 +142,47 @@ export default function Window({
       exit={{ opacity: 0, scale: 0.9 }}
       onMouseDown={handleMouseDown}
     >
-      {/* Window Header */}
+      {/* Window Header - Desktop Theme */}
       <div
         ref={dragRef}
-        className="window-header h-8 bg-gradient-to-r from-red-600 to-red-700 flex items-center justify-between px-3 cursor-move select-none"
+        className={`window-header h-8 flex items-center justify-between px-3 cursor-move select-none ${
+          isActive 
+            ? 'bg-gradient-to-r from-app-accent to-app-accent/80' 
+            : 'bg-gradient-to-r from-desktop-secondary to-desktop-secondary/80'
+        }`}
       >
         <div className="flex items-center space-x-2">
-          {icon && <div className="w-6 h-6 text-white flex items-center justify-center flex-shrink-0">{icon}</div>}
-          <span className="text-white text-sm font-mono">{title}</span>
+          {icon && <div className="w-6 h-6 text-aurora-white flex items-center justify-center flex-shrink-0">{icon}</div>}
+          <span className="text-aurora-white text-sm font-medium">{title}</span>
         </div>
         <div className="flex space-x-1">
           <button
-            className="w-5 h-5 bg-yellow-500 hover:bg-yellow-400 rounded-full flex items-center justify-center transition-colors"
+            className="w-5 h-5 bg-desktop-muted hover:bg-aurora-orange rounded-full flex items-center justify-center transition-colors"
             onClick={handleMinimize}
           >
-            <Minus className="w-3 h-3 text-black" />
+            <Minus className="w-3 h-3 text-aurora-white" />
           </button>
           <button
-            className="w-5 h-5 bg-green-500 hover:bg-green-400 rounded-full flex items-center justify-center transition-colors"
+            className="w-5 h-5 bg-desktop-muted hover:bg-aurora-orange rounded-full flex items-center justify-center transition-colors"
             onClick={toggleMaximize}
           >
-            <Square className="w-2 h-2 text-black" />
+            <Square className="w-2 h-2 text-aurora-white" />
           </button>
           <button
-            className="w-5 h-5 bg-red-500 hover:bg-red-400 rounded-full flex items-center justify-center transition-colors"
+            className="w-5 h-5 bg-aurora-coral hover:bg-aurora-coral/80 rounded-full flex items-center justify-center transition-colors"
             onClick={onClose}
           >
-            <X className="w-3 h-3 text-black" />
+            <X className="w-3 h-3 text-aurora-white" />
           </button>
         </div>
       </div>
 
-      {/* Window Content */}
-      <div className="h-full bg-black text-white overflow-hidden" style={{ height: 'calc(100% - 32px)' }}>
+      {/* Window Content - App Theme */}
+      <div className="h-full bg-gradient-to-br from-app-primary to-app-secondary text-aurora-white overflow-hidden" style={{ height: 'calc(100% - 32px)' }}>
         {children}
       </div>
 
-      {/* Resize Handle */}
+      {/* Resize Handle - Desktop Theme */}
       {!isMaximized && (
         <div
           className="absolute bottom-0 right-0 w-4 h-4 cursor-se-resize"
@@ -176,7 +192,7 @@ export default function Window({
             onFocus()
           }}
         >
-          <div className="w-full h-full bg-red-500/30 hover:bg-red-500/50 transition-colors" />
+          <div className="w-full h-full bg-app-accent/30 hover:bg-app-accent/50 transition-colors" />
         </div>
       )}
     </motion.div>
