@@ -22,6 +22,9 @@ const config: Config = {
       fontFamily: {
         mono: ['Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas', 'source-code-pro', 'monospace'],
       },
+      borderWidth: {
+        "0.75": "0.75px",
+      },
       colors: {
         // Shadcn/ui base colors
         border: "hsl(var(--border))",
@@ -104,6 +107,10 @@ const config: Config = {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
         "slide-in": "slide-in 0.5s ease-out",
+        marquee: "marquee var(--duration) linear infinite",
+        "marquee-vertical": "marquee-vertical var(--duration) linear infinite",
+        "carousel-progress": "carousel-progress var(--duration) linear",
+        "gradient": "gradient 3s linear infinite",
       },
       
       keyframes: {
@@ -126,6 +133,23 @@ const config: Config = {
         "slide-in": {
           "0%": { transform: "translateY(20px)", opacity: "0" },
           "100%": { transform: "translateY(0)", opacity: "1" },
+        },
+        marquee: {
+          from: { transform: "translateX(0)" },
+          to: { transform: "translateX(calc(-100% - var(--gap)))" },
+        },
+        "marquee-vertical": {
+          from: { transform: "translateY(0)" },
+          to: { transform: "translateY(calc(-100% - var(--gap)))" },
+        },
+        "carousel-progress": {
+          from: { width: "0%" },
+          to: { width: "100%" },
+        },
+        "gradient": {
+          "0%": { backgroundPosition: "0% 50%" },
+          "50%": { backgroundPosition: "100% 50%" },
+          "100%": { backgroundPosition: "0% 50%" },
         },
       },
       

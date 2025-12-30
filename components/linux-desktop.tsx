@@ -1,22 +1,24 @@
 "use client"
 
-import { useState, useCallback, useEffect } from "react"
+import { useState, useCallback, useEffect, useRef } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import LinuxWindow from "./linux-window"
 import Terminal from "./terminal"
 import LinuxEmailApp from "./linux-email-app"
 import ResumeApp from "./resume-app"
+import { useNotifications, NotificationTemplates } from "@/contexts/notification-context"
 import FileManager from "./file-manager"
 import SystemMonitor from "./system-monitor"
 import LinuxMobileInterface from "./linux-mobile-interface"
 import AboutPage from "./about-page"
 import ProjectsGallery from "./projects-gallery"
+import AwardsApp from "./awards-app"
 import SkillsVisualization from "./skills-visualization"
 import BlogWriteups from "./blog-writeups"
 import LinuxApplicationLauncher from "./linux-application-launcher"
 import LinuxNotifications from "./linux-notifications"
 import AIChatApp from "./ai-chat-app"
-import { TerminalIcon, Mail, FileText, Github, Folder, User, Settings, Activity, Code, Shield, Wifi, Volume2, Battery, Clock, Menu, Grid3X3, Search, Calendar, Calculator, Image, Music, Video, Globe, Bot } from 'lucide-react'
+import { TerminalIcon, Mail, FileText, Github, Folder, User, Settings, Activity, Code, Shield, Wifi, Volume2, Battery, Clock, Menu, Grid3X3, Search, Calendar, Calculator, Image, Music, Video, Globe, Bot, Trophy, Bell } from 'lucide-react'
 
 interface App {
   id: string
@@ -44,6 +46,10 @@ export default function LinuxDesktop() {
   const [showNotifications, setShowNotifications] = useState(false)
   const [currentTime, setCurrentTime] = useState(new Date())
   const [minimizedApps, setMinimizedApps] = useState<Set<string>>(new Set())
+  const hasShownWelcome = useRef(false)
+
+  // Notification context
+  const { addNotification, unreadCount } = useNotifications()
 
   // Initialize restore window functions
   useEffect(() => {
@@ -51,6 +57,18 @@ export default function LinuxDesktop() {
       window.restoreWindow = {}
     }
   }, [])
+
+  // Show welcome notification on first load
+  useEffect(() => {
+    if (!hasShownWelcome.current) {
+      hasShownWelcome.current = true
+      // Small delay to ensure everything is loaded
+      const timer = setTimeout(() => {
+        addNotification(NotificationTemplates.welcome())
+      }, 500)
+      return () => clearTimeout(timer)
+    }
+  }, [addNotification])
 
   // Update time every second and sync with user's system time
   useEffect(() => {
@@ -113,6 +131,7 @@ export default function LinuxDesktop() {
     { id: "file-manager", title: "Files", icon: <Folder className="w-8 h-8" />, category: "system" },
     { id: "email", title: "Mail", icon: <Mail className="w-8 h-8" />, category: "internet" },
     { id: "resume", title: "Resume", icon: <FileText className="w-8 h-8" />, category: "office" },
+    { id: "awards", title: "Awards", icon: <Trophy className="w-8 h-8" />, category: "office" },
     { id: "security", title: "Security Tools", icon: <Shield className="w-8 h-8" />, category: "system" },
     { id: "system-monitor", title: "System Monitor", icon: <Activity className="w-8 h-8" />, category: "system" },
     { id: "settings", title: "Settings", icon: <Settings className="w-8 h-8" />, category: "system" },
@@ -165,7 +184,7 @@ export default function LinuxDesktop() {
         category = 'system'
         break
       case "about":
-        component = <AboutPage />
+        component = <AboutPage onOpenApp={openApp} />
         size = { width: 900, height: 700 }
         category = 'favorites'
         break
@@ -192,6 +211,11 @@ export default function LinuxDesktop() {
       case "resume":
         component = <ResumeApp />
         size = { width: 800, height: 700 }
+        category = 'office'
+        break
+      case "awards":
+        component = <AwardsApp />
+        size = { width: 1000, height: 750 }
         category = 'office'
         break
       case "system-monitor":
@@ -264,6 +288,15 @@ export default function LinuxDesktop() {
       setActiveApp(remainingApps.length > 0 ? remainingApps[remainingApps.length - 1].id : null)
     }
   }, [openApps, activeApp])
+
+  // Auto-open About Me app on initial load
+  useEffect(() => {
+    // Small delay to ensure component is fully mounted
+    const timer = setTimeout(() => {
+      openApp("about")
+    }, 100)
+    return () => clearTimeout(timer)
+  }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
   const minimizeApp = useCallback((appId: string) => {
     setMinimizedApps(prev => new Set(prev).add(appId))
@@ -396,7 +429,7 @@ export default function LinuxDesktop() {
             className="px-3 py-1 hover:bg-aurora-orange/20 hover:text-aurora-coral rounded transition-colors font-medium"
             onClick={() => setShowLauncher(true)}
           >
-            Activities
+            Applications
           </button>
           <div className="text-desktop-muted">
             {currentTime.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })}
@@ -416,8 +449,19 @@ export default function LinuxDesktop() {
             <Battery className="w-4 h-4" />
           </div>
           <button 
-            className="hover:bg-aurora-orange/20 hover:text-aurora-coral px-2 py-1 rounded transition-colors"
+            className="relative hover:bg-aurora-orange/20 hover:text-aurora-coral p-1.5 rounded transition-colors"
             onClick={() => setShowNotifications(!showNotifications)}
+            title="Notifications"
+          >
+            <Bell className="w-4 h-4" />
+            {unreadCount > 0 && (
+              <span className="absolute -top-0.5 -right-0.5 w-4 h-4 bg-aurora-coral text-black text-[10px] font-bold rounded-full flex items-center justify-center">
+                {unreadCount > 9 ? '9+' : unreadCount}
+              </span>
+            )}
+          </button>
+          <button 
+            className="hover:bg-aurora-orange/20 hover:text-aurora-coral px-2 py-1 rounded transition-colors"
             title={`${currentTime.toLocaleDateString()} ${currentTime.toLocaleTimeString()}`}
           >
             <div className="flex items-center space-x-2">
