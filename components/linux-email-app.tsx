@@ -47,6 +47,7 @@ export default function LinuxEmailApp() {
   const [errorMessage, setErrorMessage] = useState('')
   const [activeView, setActiveView] = useState<'compose' | 'inbox'>('compose')
   const [selectedEmail, setSelectedEmail] = useState<Email | null>(null)
+  const [showMobileSidebar, setShowMobileSidebar] = useState(false)
   
   // Notification hook
   const { addNotification } = useNotifications()
@@ -262,9 +263,48 @@ P.S. - That variable you named "temp2_final_v3_REAL"? Still there.`,
   ]
 
   return (
-    <div className="h-full bg-gradient-to-br from-black via-gray-950 to-gray-900 text-aurora-white flex overflow-hidden">
-      {/* Sidebar */}
-      <div className="w-82 bg-black/50 border-r border-gray-800 flex flex-col shrink-0 overflow-y-auto">
+    <div className="h-full bg-gradient-to-br from-black via-gray-950 to-gray-900 text-aurora-white flex flex-col md:flex-row overflow-hidden">
+      {/* Mobile Header */}
+      <div className="md:hidden flex items-center justify-between p-3 border-b border-gray-800 bg-black/50 flex-shrink-0">
+        <div className="flex items-center space-x-2">
+          <div className="w-8 h-8 bg-gradient-to-br from-aurora-orange to-aurora-coral rounded-lg flex items-center justify-center">
+            <Mail className="w-4 h-4 text-black" />
+          </div>
+          <span className="font-semibold text-aurora-white">Mail</span>
+        </div>
+        <div className="flex items-center space-x-2">
+          <button
+            onClick={() => {
+              setActiveView('compose')
+              setSelectedEmail(null)
+            }}
+            className={`p-2 rounded-lg transition-colors ${
+              activeView === 'compose' ? 'bg-aurora-orange text-black' : 'bg-gray-800 text-gray-400'
+            }`}
+          >
+            <Send className="w-4 h-4" />
+          </button>
+          <button
+            onClick={() => {
+              setActiveView('inbox')
+              setSelectedEmail(null)
+            }}
+            className={`p-2 rounded-lg transition-colors relative ${
+              activeView === 'inbox' ? 'bg-aurora-orange text-black' : 'bg-gray-800 text-gray-400'
+            }`}
+          >
+            <Inbox className="w-4 h-4" />
+            {dummyEmails.filter(e => e.unread).length > 0 && (
+              <span className="absolute -top-1 -right-1 w-4 h-4 bg-aurora-coral text-black text-[10px] rounded-full flex items-center justify-center font-bold">
+                {dummyEmails.filter(e => e.unread).length}
+              </span>
+            )}
+          </button>
+        </div>
+      </div>
+
+      {/* Sidebar - Hidden on mobile */}
+      <div className="hidden md:flex w-72 lg:w-80 bg-black/50 border-r border-gray-800 flex-col shrink-0 overflow-y-auto">
         {/* Header */}
         <div className="p-4 border-b border-gray-800">
           <div className="flex items-center space-x-3">
@@ -335,12 +375,12 @@ P.S. - That variable you named "temp2_final_v3_REAL"? Still there.`,
       </div>
 
       {/* Main Content */}
-      <div className="flex-1 flex flex-col overflow-hidden">
+      <div className="flex-1 flex flex-col overflow-hidden min-h-0">
         {activeView === 'compose' ? (
           /* Compose Email */
-          <div className="flex-1 flex flex-col overflow-hidden">
-            {/* Header */}
-            <div className="p-6 border-b border-gray-800 shrink-0">
+          <div className="flex-1 flex flex-col overflow-hidden min-h-0">
+            {/* Header - Hidden on mobile since we have mobile header */}
+            <div className="hidden md:block p-6 border-b border-gray-800 shrink-0">
               <div className="flex items-center space-x-3">
                 <div className="p-2 bg-aurora-orange/10 rounded-xl border border-aurora-orange/30">
                   <Send className="w-5 h-5 text-aurora-orange" />
@@ -400,17 +440,17 @@ P.S. - That variable you named "temp2_final_v3_REAL"? Still there.`,
             </AnimatePresence>
 
             {/* Form */}
-            <div className="flex-1 p-6 overflow-y-auto">
-              <form onSubmit={handleSubmit} className="space-y-5 max-w-2xl">
+            <div className="flex-1 p-4 md:p-6 overflow-y-auto overscroll-contain" style={{ WebkitOverflowScrolling: 'touch' }}>
+              <form onSubmit={handleSubmit} className="space-y-4 md:space-y-5 max-w-2xl">
                 {/* To Field */}
                 <div>
                   <label className="block text-sm font-medium text-gray-400 mb-2">
                     To
                   </label>
-                  <div className="flex items-center space-x-3 p-3 bg-gray-900/50 rounded-xl border border-gray-800">
-                    <Mail className="w-4 h-4 text-aurora-orange" />
-                    <span className="text-aurora-white">rakabimarusdianto22@gmail.com</span>
-                    <span className="text-xs text-gray-600">(Rakabima Ghaniendra Rusdianto)</span>
+                  <div className="flex flex-wrap items-center gap-2 p-3 bg-gray-900/50 rounded-xl border border-gray-800">
+                    <Mail className="w-4 h-4 text-aurora-orange flex-shrink-0" />
+                    <span className="text-aurora-white text-sm md:text-base break-all">rakabimarusdianto22@gmail.com</span>
+                    <span className="text-xs text-gray-600 hidden sm:inline">(Rakabima Ghaniendra Rusdianto)</span>
                   </div>
                 </div>
 
@@ -486,14 +526,13 @@ P.S. - That variable you named "temp2_final_v3_REAL"? Still there.`,
                 </div>
 
                 {/* Actions */}
-                <div className="flex items-center justify-between pt-2">
-                  <div className="flex items-center gap-3">
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 pt-2 pb-4">
+                  <div className="flex items-center gap-2 sm:gap-3">
                     <motion.button
                       type="submit"
                       disabled={status === 'sending'}
-                      whileHover={{ scale: status === 'sending' ? 1 : 1.02 }}
                       whileTap={{ scale: status === 'sending' ? 1 : 0.98 }}
-                      className="bg-gradient-to-r from-aurora-orange to-aurora-coral text-black px-6 py-3 rounded-xl font-bold flex items-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed shadow-lg hover:shadow-aurora-orange/25 transition-all"
+                      className="flex-1 sm:flex-initial bg-gradient-to-r from-aurora-orange to-aurora-coral text-black px-4 sm:px-6 py-3 rounded-xl font-bold flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed shadow-lg transition-all"
                     >
                       {status === 'sending' ? (
                         <>
@@ -503,17 +542,16 @@ P.S. - That variable you named "temp2_final_v3_REAL"? Still there.`,
                       ) : (
                         <>
                           <Send className="w-4 h-4" />
-                          <span>Send Message</span>
+                          <span>Send</span>
                         </>
                       )}
                     </motion.button>
                     
                     <motion.button
                       type="button"
-                      whileHover={{ scale: 1.02 }}
                       whileTap={{ scale: 0.98 }}
                       onClick={() => setFormData({ name: '', email: '', subject: '', message: '' })}
-                      className="px-6 py-3 bg-gray-800 hover:bg-gray-700 text-gray-300 rounded-xl font-medium border border-gray-700 hover:border-gray-600 transition-all"
+                      className="px-4 sm:px-6 py-3 bg-gray-800 hover:bg-gray-700 text-gray-300 rounded-xl font-medium border border-gray-700 transition-all"
                     >
                       Clear
                     </motion.button>
@@ -528,29 +566,29 @@ P.S. - That variable you named "temp2_final_v3_REAL"? Still there.`,
           </div>
         ) : (
           /* Inbox View */
-          <div className="flex-1 flex flex-col overflow-hidden">
+          <div className="flex-1 flex flex-col overflow-hidden min-h-0">
             {/* Header */}
-            <div className="p-6 border-b border-gray-800 shrink-0">
+            <div className="p-3 md:p-6 border-b border-gray-800 shrink-0">
               <div className="flex items-center justify-between">
-                <div className="flex items-center space-x-3">
+                <div className="flex items-center space-x-2 md:space-x-3 min-w-0">
                   {selectedEmail && (
                     <motion.button
                       initial={{ opacity: 0, x: -10 }}
                       animate={{ opacity: 1, x: 0 }}
                       onClick={() => setSelectedEmail(null)}
-                      className="p-2 hover:bg-gray-800 rounded-lg transition-colors mr-2"
+                      className="p-2 hover:bg-gray-800 rounded-lg transition-colors flex-shrink-0"
                     >
                       <ArrowLeft className="w-5 h-5 text-gray-400" />
                     </motion.button>
                   )}
-                  <div className="p-2 bg-aurora-orange/10 rounded-xl border border-aurora-orange/30">
+                  <div className="hidden md:block p-2 bg-aurora-orange/10 rounded-xl border border-aurora-orange/30 flex-shrink-0">
                     <Inbox className="w-5 h-5 text-aurora-orange" />
                   </div>
-                  <div>
-                    <h1 className="text-2xl font-bold bg-gradient-to-r from-aurora-orange to-aurora-coral bg-clip-text text-transparent">
+                  <div className="min-w-0">
+                    <h1 className="text-lg md:text-2xl font-bold bg-gradient-to-r from-aurora-orange to-aurora-coral bg-clip-text text-transparent truncate">
                       {selectedEmail ? selectedEmail.subject : 'Inbox'}
                     </h1>
-                    <p className="text-gray-500 text-sm">
+                    <p className="text-gray-500 text-xs md:text-sm truncate">
                       {selectedEmail ? `From: ${selectedEmail.from}` : `${dummyEmails.filter(e => e.unread).length} unread messages`}
                     </p>
                   </div>
@@ -559,7 +597,7 @@ P.S. - That variable you named "temp2_final_v3_REAL"? Still there.`,
             </div>
 
             {/* Email List or Detail */}
-            <div className="flex-1 overflow-y-auto">
+            <div className="flex-1 overflow-y-auto overscroll-contain" style={{ WebkitOverflowScrolling: 'touch' }}>
               <AnimatePresence mode="wait">
                 {selectedEmail ? (
                   /* Email Detail View */
@@ -568,32 +606,32 @@ P.S. - That variable you named "temp2_final_v3_REAL"? Still there.`,
                     initial={{ opacity: 0, x: 20 }}
                     animate={{ opacity: 1, x: 0 }}
                     exit={{ opacity: 0, x: -20 }}
-                    className="p-6"
+                    className="p-3 md:p-6"
                   >
                     <div className="bg-gray-900/50 rounded-2xl border border-gray-800 overflow-hidden">
                       {/* Email Header */}
-                      <div className="p-6 border-b border-gray-800">
-                        <div className="flex items-start justify-between mb-4">
-                          <div className="flex items-center gap-4">
-                            <div className="w-12 h-12 bg-gradient-to-br from-aurora-orange to-aurora-coral rounded-full flex items-center justify-center text-black font-bold text-lg">
+                      <div className="p-4 md:p-6 border-b border-gray-800">
+                        <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3 mb-4">
+                          <div className="flex items-center gap-3">
+                            <div className="w-10 h-10 md:w-12 md:h-12 bg-gradient-to-br from-aurora-orange to-aurora-coral rounded-full flex items-center justify-center text-black font-bold text-sm md:text-lg flex-shrink-0">
                               {selectedEmail.from.charAt(0)}
                             </div>
-                            <div>
-                              <h3 className="font-semibold text-aurora-white">{selectedEmail.from}</h3>
-                              <p className="text-sm text-gray-500">{selectedEmail.email}</p>
+                            <div className="min-w-0">
+                              <h3 className="font-semibold text-aurora-white text-sm md:text-base truncate">{selectedEmail.from}</h3>
+                              <p className="text-xs md:text-sm text-gray-500 truncate">{selectedEmail.email}</p>
                             </div>
                           </div>
-                          <div className="flex items-center gap-2 text-gray-500 text-sm">
-                            <Clock className="w-4 h-4" />
+                          <div className="flex items-center gap-2 text-gray-500 text-xs md:text-sm flex-shrink-0">
+                            <Clock className="w-3 h-3 md:w-4 md:h-4" />
                             {selectedEmail.time}
                           </div>
                         </div>
-                        <h2 className="text-xl font-bold text-aurora-white">{selectedEmail.subject}</h2>
+                        <h2 className="text-base md:text-xl font-bold text-aurora-white">{selectedEmail.subject}</h2>
                       </div>
                       
                       {/* Email Body */}
-                      <div className="p-6">
-                        <div className="text-gray-300 whitespace-pre-wrap leading-relaxed">
+                      <div className="p-4 md:p-6">
+                        <div className="text-gray-300 whitespace-pre-wrap leading-relaxed text-sm md:text-base">
                           {selectedEmail.fullMessage}
                         </div>
                       </div>
@@ -614,13 +652,13 @@ P.S. - That variable you named "temp2_final_v3_REAL"? Still there.`,
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: index * 0.05 }}
                         onClick={() => setSelectedEmail(email)}
-                        className={`p-4 border-b border-gray-800 hover:bg-gray-800/30 cursor-pointer transition-all ${
+                        className={`p-3 md:p-4 border-b border-gray-800 hover:bg-gray-800/30 active:bg-gray-800/50 cursor-pointer transition-all ${
                           email.unread ? 'bg-aurora-orange/5' : ''
                         }`}
                       >
-                        <div className="flex items-start gap-4">
-                          <div className="relative">
-                            <div className={`w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold ${
+                        <div className="flex items-start gap-3">
+                          <div className="relative flex-shrink-0">
+                            <div className={`w-9 h-9 md:w-10 md:h-10 rounded-full flex items-center justify-center text-xs md:text-sm font-bold ${
                               email.unread 
                                 ? 'bg-gradient-to-br from-aurora-orange to-aurora-coral text-black' 
                                 : 'bg-gray-800 text-gray-400'
@@ -628,31 +666,31 @@ P.S. - That variable you named "temp2_final_v3_REAL"? Still there.`,
                               {email.from.charAt(0)}
                             </div>
                             {email.unread && (
-                              <div className="absolute -top-0.5 -right-0.5 w-3 h-3 bg-aurora-coral rounded-full border-2 border-gray-900" />
+                              <div className="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 bg-aurora-coral rounded-full border-2 border-gray-900" />
                             )}
                           </div>
                           <div className="flex-1 min-w-0">
-                            <div className="flex items-center justify-between mb-1">
-                              <h3 className={`font-medium truncate ${
+                            <div className="flex items-center justify-between mb-0.5 md:mb-1">
+                              <h3 className={`font-medium truncate text-sm md:text-base ${
                                 email.unread ? 'text-aurora-white' : 'text-gray-400'
                               }`}>
                                 {email.from}
                               </h3>
-                              <div className="flex items-center gap-2 shrink-0 ml-4">
+                              <div className="flex items-center gap-1.5 md:gap-2 shrink-0 ml-2">
                                 {email.starred && (
-                                  <Star className="w-4 h-4 text-aurora-orange fill-current" />
+                                  <Star className="w-3 h-3 md:w-4 md:h-4 text-aurora-orange fill-current" />
                                 )}
-                                <span className="text-xs text-gray-600">
+                                <span className="text-[10px] md:text-xs text-gray-600">
                                   {email.time}
                                 </span>
                               </div>
                             </div>
-                            <h4 className={`text-sm mb-1 truncate ${
+                            <h4 className={`text-xs md:text-sm mb-0.5 md:mb-1 truncate ${
                               email.unread ? 'font-medium text-aurora-white' : 'text-gray-400'
                             }`}>
                               {email.subject}
                             </h4>
-                            <p className="text-sm text-gray-600 truncate">
+                            <p className="text-xs md:text-sm text-gray-600 truncate">
                               {email.preview}
                             </p>
                           </div>

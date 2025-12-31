@@ -33,15 +33,15 @@ export default function ResumeApp() {
   return (
     <div className="h-full flex flex-col bg-gradient-to-br from-gray-900 via-gray-950 to-black">
       {/* Toolbar */}
-      <div className="flex items-center justify-between px-4 py-3 bg-gray-900/80 border-b border-aurora-orange/20 backdrop-blur-sm">
-        <div className="flex items-center gap-2">
-          <FileText className="w-5 h-5 text-aurora-orange" />
-          <span className="text-aurora-white font-medium">Curriculum Vitae</span>
+      <div className="flex items-center justify-between px-2 sm:px-4 py-2 sm:py-3 bg-gray-900/80 border-b border-aurora-orange/20 backdrop-blur-sm">
+        <div className="flex items-center gap-1.5 sm:gap-2">
+          <FileText className="w-4 h-4 sm:w-5 sm:h-5 text-aurora-orange" />
+          <span className="text-aurora-white font-medium text-xs sm:text-base truncate">CV</span>
         </div>
         
-        <div className="flex items-center gap-2">
-          {/* Zoom Controls */}
-          <div className="flex items-center gap-1 bg-gray-800 rounded-lg px-2 py-1 border border-gray-700">
+        <div className="flex items-center gap-1 sm:gap-2">
+          {/* Zoom Controls - Hidden on mobile */}
+          <div className="hidden sm:flex items-center gap-1 bg-gray-800 rounded-lg px-2 py-1 border border-gray-700">
             <button
               onClick={zoomOut}
               className="p-1.5 text-gray-400 hover:text-aurora-orange transition-colors"
@@ -69,11 +69,11 @@ export default function ResumeApp() {
           {/* Open in New Tab */}
           <button
             onClick={handleOpenInNewTab}
-            className="flex items-center gap-2 px-3 py-1.5 bg-gray-800 hover:bg-gray-700 text-gray-300 hover:text-aurora-white rounded-lg border border-gray-700 transition-colors"
+            className="flex items-center gap-1 sm:gap-2 px-2 sm:px-3 py-1.5 bg-gray-800 hover:bg-gray-700 text-gray-300 hover:text-aurora-white rounded-lg border border-gray-700 transition-colors"
             title="Open in New Tab"
           >
             <Maximize2 className="w-4 h-4" />
-            <span className="text-sm hidden sm:inline">Fullscreen</span>
+            <span className="text-xs sm:text-sm hidden sm:inline">Fullscreen</span>
           </button>
 
           {/* Download Button */}
@@ -81,23 +81,23 @@ export default function ResumeApp() {
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
             onClick={handleDownload}
-            className="flex items-center gap-2 px-4 py-1.5 bg-gradient-to-r from-aurora-orange to-aurora-coral text-black font-semibold rounded-lg hover:shadow-lg hover:shadow-aurora-orange/25 transition-all"
+            className="flex items-center gap-1 sm:gap-2 px-2 sm:px-4 py-1.5 bg-gradient-to-r from-aurora-orange to-aurora-coral text-black font-semibold rounded-lg hover:shadow-lg hover:shadow-aurora-orange/25 transition-all"
           >
             <Download className="w-4 h-4" />
-            <span className="text-sm">Download CV</span>
+            <span className="text-xs sm:text-sm">Download</span>
           </motion.button>
         </div>
       </div>
 
       {/* PDF Viewer */}
-      <div className="flex-1 overflow-auto p-4 flex items-start justify-center">
+      <div className="flex-1 overflow-auto overscroll-contain p-2 sm:p-4 flex items-start justify-center min-h-0" style={{ WebkitOverflowScrolling: 'touch' as const }}>
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="relative bg-white rounded-lg shadow-2xl shadow-black/50 overflow-hidden"
+          className="relative bg-white rounded-lg shadow-2xl shadow-black/50 overflow-hidden w-full sm:w-auto"
           style={{
-            width: `${Math.min(800 * (scale / 100), 1200)}px`,
-            minHeight: '500px',
+            maxWidth: `${Math.min(800 * (scale / 100), 1200)}px`,
+            minHeight: '400px',
           }}
         >
           {/* Loading State */}
@@ -134,7 +134,7 @@ export default function ResumeApp() {
             src={`${PDF_PATH}#toolbar=0&navpanes=0&scrollbar=1`}
             className="w-full border-0"
             style={{
-              height: `${Math.max(600, 800 * (scale / 100))}px`,
+              height: `${Math.max(500, 700 * (scale / 100))}px`,
               display: hasError ? 'none' : 'block',
             }}
             onLoad={() => setIsLoading(false)}
@@ -148,8 +148,8 @@ export default function ResumeApp() {
       </div>
 
       {/* Footer with download prompt */}
-      <div className="px-4 py-3 bg-gray-900/80 border-t border-aurora-orange/20 backdrop-blur-sm">
-        <div className="flex items-center justify-center gap-2 text-sm text-gray-400">
+      <div className="px-2 sm:px-4 py-2 sm:py-3 bg-gray-900/80 border-t border-aurora-orange/20 backdrop-blur-sm">
+        <div className="flex items-center justify-center gap-2 text-xs sm:text-sm text-gray-400">
           <span>Want a copy?</span>
           <button
             onClick={handleDownload}

@@ -168,16 +168,16 @@ export default function ProjectsGallery() {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         exit={{ opacity: 0, y: -20 }}
-        whileHover={{ y: -6, scale: 1.01 }}
+        whileHover={{ y: -4, scale: 1.01 }}
         transition={{ duration: 0.3 }}
-        className={`group relative bg-gradient-to-br from-gray-900/95 via-gray-900/90 to-black/95 rounded-2xl overflow-hidden border border-gray-800 hover:border-aurora-orange/50 transition-all duration-300 cursor-pointer shadow-xl hover:shadow-aurora-orange/10 ${isFeatured ? 'ring-1 ring-aurora-orange/20' : ''}`}
+        className={`group relative bg-gradient-to-br from-gray-900/95 via-gray-900/90 to-black/95 rounded-xl sm:rounded-2xl overflow-hidden border border-gray-800 hover:border-aurora-orange/50 transition-all duration-300 cursor-pointer shadow-xl hover:shadow-aurora-orange/10 ${isFeatured ? 'ring-1 ring-aurora-orange/20' : ''}`}
         onClick={() => setSelectedProject(project)}
       >
         {/* Featured Badge */}
         {isFeatured && (
-          <div className="absolute top-3 left-3 z-20 flex items-center gap-1.5 px-2.5 py-1 bg-gradient-to-r from-aurora-orange to-aurora-coral rounded-full">
-            <Star className="w-3 h-3 text-black fill-current" />
-            <span className="text-xs font-bold text-black">Featured</span>
+          <div className="absolute top-2 left-2 sm:top-3 sm:left-3 z-20 flex items-center gap-1 sm:gap-1.5 px-2 py-0.5 sm:px-2.5 sm:py-1 bg-gradient-to-r from-aurora-orange to-aurora-coral rounded-full">
+            <Star className="w-2.5 h-2.5 sm:w-3 sm:h-3 text-black fill-current" />
+            <span className="text-[10px] sm:text-xs font-bold text-black">Featured</span>
           </div>
         )}
 
@@ -191,44 +191,44 @@ export default function ProjectsGallery() {
           <div className="absolute inset-0 bg-gradient-to-t from-gray-900 via-transparent to-transparent opacity-60"></div>
           
           {/* Status Badge */}
-          <div className="absolute top-3 right-3 z-10">
-            <span className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium border ${statusConfig.color}`}>
+          <div className="absolute top-2 right-2 sm:top-3 sm:right-3 z-10">
+            <span className={`flex items-center gap-1 sm:gap-1.5 px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-full text-[10px] sm:text-xs font-medium border ${statusConfig.color}`}>
               {statusConfig.icon}
-              {statusConfig.text}
+              <span className="hidden sm:inline">{statusConfig.text}</span>
             </span>
           </div>
 
           {/* Category Badge */}
-          <div className="absolute bottom-3 left-3 z-10">
-            <span className="flex items-center gap-1.5 px-2.5 py-1 bg-black/60 backdrop-blur-sm rounded-full text-xs text-gray-300 border border-gray-700">
+          <div className="absolute bottom-2 left-2 sm:bottom-3 sm:left-3 z-10">
+            <span className="flex items-center gap-1 sm:gap-1.5 px-2 py-0.5 sm:px-2.5 sm:py-1 bg-black/60 backdrop-blur-sm rounded-full text-[10px] sm:text-xs text-gray-300 border border-gray-700">
               {getCategoryIcon(project.category)}
-              <span className="capitalize">{project.category}</span>
+              <span className="capitalize hidden sm:inline">{project.category}</span>
             </span>
           </div>
         </div>
 
         {/* Content */}
-        <div className="p-5">
-          <h3 className="font-bold text-lg text-aurora-white mb-2 group-hover:text-aurora-orange transition-colors line-clamp-1">
+        <div className="p-3 sm:p-5">
+          <h3 className="font-bold text-sm sm:text-lg text-aurora-white mb-1 sm:mb-2 group-hover:text-aurora-orange transition-colors line-clamp-1">
             {project.title}
           </h3>
-          <p className="text-gray-400 text-sm mb-4 line-clamp-2 leading-relaxed">
+          <p className="text-gray-400 text-xs sm:text-sm mb-3 sm:mb-4 line-clamp-2 leading-relaxed">
             {project.description}
           </p>
           
           {/* Technologies */}
-          <div className="flex flex-wrap gap-1.5 mb-4">
-            {project.technologies.slice(0, 4).map((tech) => (
+          <div className="flex flex-wrap gap-1 sm:gap-1.5 mb-3 sm:mb-4">
+            {project.technologies.slice(0, 3).map((tech) => (
               <span 
                 key={tech} 
-                className="px-2 py-1 bg-aurora-orange/10 text-aurora-coral text-xs rounded-md border border-aurora-orange/20 font-medium"
+                className="px-1.5 sm:px-2 py-0.5 sm:py-1 bg-aurora-orange/10 text-aurora-coral text-[10px] sm:text-xs rounded-md border border-aurora-orange/20 font-medium"
               >
                 {tech}
               </span>
             ))}
-            {project.technologies.length > 4 && (
-              <span className="px-2 py-1 bg-gray-800 text-gray-400 text-xs rounded-md border border-gray-700">
-                +{project.technologies.length - 4}
+            {project.technologies.length > 3 && (
+              <span className="px-1.5 sm:px-2 py-0.5 sm:py-1 bg-gray-800 text-gray-400 text-[10px] sm:text-xs rounded-md border border-gray-700">
+                +{project.technologies.length - 3}
               </span>
             )}
           </div>
@@ -241,9 +241,9 @@ export default function ProjectsGallery() {
                   e.stopPropagation()
                   window.open(project.githubUrl, '_blank')
                 }}
-                className="flex-1 flex items-center justify-center gap-2 px-3 py-2 bg-gray-800 hover:bg-gray-700 text-gray-300 hover:text-aurora-white rounded-lg border border-gray-700 hover:border-gray-600 transition-all text-sm font-medium"
+                className="flex-1 flex items-center justify-center gap-1.5 sm:gap-2 px-2 sm:px-3 py-1.5 sm:py-2 bg-gray-800 hover:bg-gray-700 text-gray-300 hover:text-aurora-white rounded-lg border border-gray-700 hover:border-gray-600 transition-all text-xs sm:text-sm font-medium"
               >
-                <Github className="w-4 h-4" />
+                <Github className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                 Code
               </button>
             )}
@@ -253,10 +253,10 @@ export default function ProjectsGallery() {
                   e.stopPropagation()
                   window.open(project.liveUrl, '_blank')
                 }}
-                className="flex-1 flex items-center justify-center gap-2 px-3 py-2 bg-gradient-to-r from-aurora-orange to-aurora-coral text-black font-semibold rounded-lg hover:shadow-lg hover:shadow-aurora-orange/25 transition-all text-sm"
+                className="flex-1 flex items-center justify-center gap-1.5 sm:gap-2 px-2 sm:px-3 py-1.5 sm:py-2 bg-gradient-to-r from-aurora-orange to-aurora-coral text-black font-semibold rounded-lg hover:shadow-lg hover:shadow-aurora-orange/25 transition-all text-xs sm:text-sm"
               >
-                <ExternalLink className="w-4 h-4" />
-                Live Demo
+                <ExternalLink className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+                Live
               </button>
             )}
           </div>
@@ -266,23 +266,23 @@ export default function ProjectsGallery() {
   }
 
   return (
-    <div className="h-full bg-gradient-to-br from-black via-gray-950 to-gray-900 text-aurora-white overflow-y-auto">
-      <div className="p-6 md:p-8 max-w-7xl mx-auto">
+    <div className="h-full bg-gradient-to-br from-black via-gray-950 to-gray-900 text-aurora-white overflow-y-auto overscroll-contain" style={{ WebkitOverflowScrolling: 'touch' as const }}>
+      <div className="p-4 sm:p-6 md:p-8 pb-8 max-w-7xl mx-auto">
         {/* Header */}
         <motion.div 
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="mb-8"
+          className="mb-6 sm:mb-8"
         >
-          <div className="flex items-center gap-3 mb-3">
-            <div className="p-2.5 bg-aurora-orange/10 rounded-xl border border-aurora-orange/30">
-              <Code className="w-6 h-6 text-aurora-orange" />
+          <div className="flex items-center gap-2 sm:gap-3 mb-2 sm:mb-3">
+            <div className="p-2 sm:p-2.5 bg-aurora-orange/10 rounded-lg sm:rounded-xl border border-aurora-orange/30">
+              <Code className="w-5 h-5 sm:w-6 sm:h-6 text-aurora-orange" />
             </div>
-            <h1 className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-aurora-orange via-aurora-coral to-aurora-white bg-clip-text text-transparent">
+            <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold bg-gradient-to-r from-aurora-orange via-aurora-coral to-aurora-white bg-clip-text text-transparent">
               Projects Portfolio
             </h1>
           </div>
-          <p className="text-gray-400 text-lg">
+          <p className="text-gray-400 text-sm sm:text-lg">
             Showcasing my technical projects and contributions
           </p>
         </motion.div>
@@ -292,29 +292,29 @@ export default function ProjectsGallery() {
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1 }}
-          className="mb-8 space-y-4"
+          className="mb-6 sm:mb-8 space-y-3 sm:space-y-4"
         >
           {/* Search Bar */}
-          <div className="relative max-w-md">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500" />
+          <div className="relative w-full sm:max-w-md">
+            <Search className="absolute left-3 sm:left-4 top-1/2 -translate-y-1/2 w-4 h-4 sm:w-5 sm:h-5 text-gray-500" />
             <input
               type="text"
-              placeholder="Search projects, technologies..."
+              placeholder="Search projects..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-12 pr-4 py-3 bg-gray-900/80 border border-gray-700 rounded-xl text-aurora-white placeholder-gray-500 focus:outline-none focus:border-aurora-orange/50 focus:ring-1 focus:ring-aurora-orange/25 transition-all"
+              className="w-full pl-10 sm:pl-12 pr-4 py-2.5 sm:py-3 bg-gray-900/80 border border-gray-700 rounded-lg sm:rounded-xl text-aurora-white placeholder-gray-500 focus:outline-none focus:border-aurora-orange/50 focus:ring-1 focus:ring-aurora-orange/25 transition-all text-sm sm:text-base"
             />
           </div>
 
           {/* Category Filter */}
-          <div className="flex flex-wrap gap-2">
+          <div className="flex flex-wrap gap-1.5 sm:gap-2">
             {categories.map((category) => (
               <motion.button
                 key={category.id}
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
                 onClick={() => setSelectedCategory(category.id)}
-                className={`flex items-center gap-2 px-4 py-2.5 rounded-xl font-medium transition-all duration-300 border ${
+                className={`flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-4 py-1.5 sm:py-2.5 rounded-lg sm:rounded-xl font-medium transition-all duration-300 border text-xs sm:text-sm ${
                   selectedCategory === category.id
                     ? 'bg-gradient-to-r from-aurora-orange to-aurora-coral text-black border-aurora-orange/50 shadow-lg shadow-aurora-orange/20'
                     : 'bg-gray-900/80 text-gray-300 border-gray-700 hover:border-aurora-orange/40 hover:text-aurora-orange'
@@ -331,9 +331,9 @@ export default function ProjectsGallery() {
         <motion.div 
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          className="mb-6"
+          className="mb-4 sm:mb-6"
         >
-          <p className="text-gray-500 text-sm">
+          <p className="text-gray-500 text-xs sm:text-sm">
             Showing <span className="text-aurora-orange font-semibold">{filteredProjects.length}</span> project{filteredProjects.length !== 1 ? 's' : ''}
             {searchQuery && <span> for "<span className="text-aurora-coral">{searchQuery}</span>"</span>}
           </p>
@@ -360,13 +360,13 @@ export default function ProjectsGallery() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.2 }}
-            className="mb-10"
+            className="mb-6 sm:mb-10"
           >
-            <div className="flex items-center gap-2 mb-5">
-              <Star className="w-5 h-5 text-aurora-orange" />
-              <h2 className="text-xl font-bold text-aurora-white">Featured Projects</h2>
+            <div className="flex items-center gap-2 mb-3 sm:mb-5">
+              <Star className="w-4 h-4 sm:w-5 sm:h-5 text-aurora-orange" />
+              <h2 className="text-lg sm:text-xl font-bold text-aurora-white">Featured Projects</h2>
             </div>
-            <div className="grid md:grid-cols-2 xl:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-6">
               <AnimatePresence mode="popLayout">
                 {featuredProjects.map((project) => (
                   <ProjectCard key={project.id} project={project} isFeatured />
@@ -384,12 +384,12 @@ export default function ProjectsGallery() {
             transition={{ delay: 0.3 }}
           >
             {featuredProjects.length > 0 && (
-              <div className="flex items-center gap-2 mb-5">
-                <Code className="w-5 h-5 text-aurora-coral" />
-                <h2 className="text-xl font-bold text-aurora-white">More Projects</h2>
+              <div className="flex items-center gap-2 mb-3 sm:mb-5">
+                <Code className="w-4 h-4 sm:w-5 sm:h-5 text-aurora-coral" />
+                <h2 className="text-lg sm:text-xl font-bold text-aurora-white">More Projects</h2>
               </div>
             )}
-            <div className="grid md:grid-cols-2 xl:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-6">
               <AnimatePresence mode="popLayout">
                 {regularProjects.map((project) => (
                   <ProjectCard key={project.id} project={project} />
@@ -404,22 +404,27 @@ export default function ProjectsGallery() {
       <AnimatePresence>
         {selectedProject && (
           <motion.div
-            className="fixed inset-0 bg-black/85 backdrop-blur-md z-50 flex items-center justify-center p-4"
+            className="fixed inset-0 bg-black/85 backdrop-blur-md z-50 flex items-end sm:items-center justify-center p-0 sm:p-4"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={() => setSelectedProject(null)}
           >
             <motion.div
-              className="bg-gradient-to-br from-gray-900 via-gray-900 to-black rounded-2xl max-w-4xl w-full max-h-[90vh] overflow-hidden border border-aurora-orange/30 shadow-2xl shadow-black/50"
-              initial={{ scale: 0.9, opacity: 0, y: 20 }}
+              className="bg-gradient-to-br from-gray-900 via-gray-900 to-black rounded-t-2xl sm:rounded-2xl w-full sm:max-w-4xl max-h-[95vh] sm:max-h-[90vh] overflow-hidden border-t sm:border border-aurora-orange/30 shadow-2xl shadow-black/50"
+              initial={{ scale: 0.95, opacity: 0, y: 100 }}
               animate={{ scale: 1, opacity: 1, y: 0 }}
-              exit={{ scale: 0.9, opacity: 0, y: 20 }}
+              exit={{ scale: 0.95, opacity: 0, y: 100 }}
               transition={{ type: "spring", damping: 25, stiffness: 300 }}
               onClick={(e) => e.stopPropagation()}
             >
+              {/* Drag handle for mobile */}
+              <div className="flex justify-center pt-2 sm:hidden">
+                <div className="w-10 h-1 bg-gray-600 rounded-full" />
+              </div>
+              
               {/* Modal Header Image */}
-              <div className="relative h-64 md:h-72 overflow-hidden">
+              <div className="relative h-40 sm:h-64 md:h-72 overflow-hidden">
                 <img 
                   src={selectedProject.image || "/placeholder.svg"} 
                   alt={selectedProject.title}
@@ -430,46 +435,46 @@ export default function ProjectsGallery() {
                 {/* Close Button */}
                 <button
                   onClick={() => setSelectedProject(null)}
-                  className="absolute top-4 right-4 p-2 bg-black/50 hover:bg-black/70 backdrop-blur-sm rounded-full text-gray-400 hover:text-white transition-colors border border-gray-700"
+                  className="absolute top-2 right-2 sm:top-4 sm:right-4 p-2 bg-black/50 hover:bg-black/70 backdrop-blur-sm rounded-full text-gray-400 hover:text-white transition-colors border border-gray-700"
                 >
-                  <X className="w-5 h-5" />
+                  <X className="w-4 h-4 sm:w-5 sm:h-5" />
                 </button>
 
                 {/* Title Overlay */}
-                <div className="absolute bottom-0 left-0 right-0 p-6">
-                  <div className="flex items-center gap-3 mb-3">
+                <div className="absolute bottom-0 left-0 right-0 p-4 sm:p-6">
+                  <div className="flex items-center gap-2 sm:gap-3 mb-2 sm:mb-3">
                     {selectedProject.featured && (
-                      <span className="flex items-center gap-1.5 px-2.5 py-1 bg-gradient-to-r from-aurora-orange to-aurora-coral rounded-full text-xs font-bold text-black">
-                        <Star className="w-3 h-3 fill-current" />
+                      <span className="flex items-center gap-1 sm:gap-1.5 px-2 py-0.5 sm:px-2.5 sm:py-1 bg-gradient-to-r from-aurora-orange to-aurora-coral rounded-full text-[10px] sm:text-xs font-bold text-black">
+                        <Star className="w-2.5 h-2.5 sm:w-3 sm:h-3 fill-current" />
                         Featured
                       </span>
                     )}
-                    <span className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium border ${getStatusConfig(selectedProject.status).color}`}>
+                    <span className={`flex items-center gap-1 sm:gap-1.5 px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-full text-[10px] sm:text-xs font-medium border ${getStatusConfig(selectedProject.status).color}`}>
                       {getStatusConfig(selectedProject.status).icon}
                       {getStatusConfig(selectedProject.status).text}
                     </span>
                   </div>
-                  <h2 className="text-2xl md:text-3xl font-bold text-aurora-white">{selectedProject.title}</h2>
+                  <h2 className="text-lg sm:text-2xl md:text-3xl font-bold text-aurora-white">{selectedProject.title}</h2>
                 </div>
               </div>
               
               {/* Modal Content */}
-              <div className="p-6 overflow-y-auto max-h-[calc(90vh-18rem)]">
-                <p className="text-gray-300 text-lg leading-relaxed mb-6">
+              <div className="p-4 sm:p-6 overflow-y-auto max-h-[calc(95vh-12rem)] sm:max-h-[calc(90vh-18rem)]">
+                <p className="text-gray-300 text-sm sm:text-lg leading-relaxed mb-4 sm:mb-6">
                   {selectedProject.longDescription}
                 </p>
                 
                 {/* Technologies */}
-                <div className="mb-6">
-                  <h3 className="font-semibold text-aurora-orange mb-3 flex items-center gap-2">
-                    <Code className="w-4 h-4" />
+                <div className="mb-4 sm:mb-6">
+                  <h3 className="font-semibold text-aurora-orange mb-2 sm:mb-3 flex items-center gap-2 text-sm sm:text-base">
+                    <Code className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                     Technologies Used
                   </h3>
-                  <div className="flex flex-wrap gap-2">
+                  <div className="flex flex-wrap gap-1.5 sm:gap-2">
                     {selectedProject.technologies.map((tech) => (
                       <span 
                         key={tech} 
-                        className="px-3 py-1.5 bg-aurora-orange/10 text-aurora-coral rounded-lg border border-aurora-orange/20 font-medium"
+                        className="px-2 sm:px-3 py-1 sm:py-1.5 bg-aurora-orange/10 text-aurora-coral rounded-lg border border-aurora-orange/20 font-medium text-xs sm:text-sm"
                       >
                         {tech}
                       </span>
@@ -478,16 +483,16 @@ export default function ProjectsGallery() {
                 </div>
                 
                 {/* Action Buttons */}
-                <div className="flex flex-col sm:flex-row gap-3 pt-4 border-t border-gray-800">
+                <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 pt-4 border-t border-gray-800">
                   {selectedProject.githubUrl && (
                     <motion.button
                       whileHover={{ scale: 1.02 }}
                       whileTap={{ scale: 0.98 }}
                       onClick={() => window.open(selectedProject.githubUrl, '_blank')}
-                      className="flex-1 flex items-center justify-center gap-2 px-6 py-3 bg-gray-800 hover:bg-gray-700 text-aurora-white font-semibold rounded-xl border border-gray-700 hover:border-gray-600 transition-all"
+                      className="flex-1 flex items-center justify-center gap-2 px-4 sm:px-6 py-2.5 sm:py-3 bg-gray-800 hover:bg-gray-700 text-aurora-white font-semibold rounded-xl border border-gray-700 hover:border-gray-600 transition-all text-sm sm:text-base"
                     >
-                      <Github className="w-5 h-5" />
-                      View Source Code
+                      <Github className="w-4 h-4 sm:w-5 sm:h-5" />
+                      View Source
                     </motion.button>
                   )}
                   {selectedProject.liveUrl && (
@@ -495,10 +500,10 @@ export default function ProjectsGallery() {
                       whileHover={{ scale: 1.02 }}
                       whileTap={{ scale: 0.98 }}
                       onClick={() => window.open(selectedProject.liveUrl, '_blank')}
-                      className="flex-1 flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-aurora-orange to-aurora-coral text-black font-bold rounded-xl hover:shadow-lg hover:shadow-aurora-orange/25 transition-all"
+                      className="flex-1 flex items-center justify-center gap-2 px-4 sm:px-6 py-2.5 sm:py-3 bg-gradient-to-r from-aurora-orange to-aurora-coral text-black font-bold rounded-xl hover:shadow-lg hover:shadow-aurora-orange/25 transition-all text-sm sm:text-base"
                     >
-                      <ExternalLink className="w-5 h-5" />
-                      View Live Demo
+                      <ExternalLink className="w-4 h-4 sm:w-5 sm:h-5" />
+                      Live Demo
                     </motion.button>
                   )}
                 </div>

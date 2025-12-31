@@ -265,8 +265,8 @@ export default function AwardsApp() {
   }
 
   return (
-    <div className="h-full bg-gradient-to-br from-black via-gray-950 to-gray-900 text-aurora-white overflow-y-auto">
-      <div className="p-6 md:p-8 max-w-7xl mx-auto">
+    <div className="h-full bg-gradient-to-br from-black via-gray-950 to-gray-900 text-aurora-white overflow-y-auto overscroll-contain" style={{ WebkitOverflowScrolling: 'touch' as const }}>
+      <div className="p-4 sm:p-6 md:p-8 pb-8 max-w-7xl mx-auto">
         {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: -20 }}

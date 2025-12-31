@@ -209,7 +209,7 @@ export default function LinuxDesktop() {
         category = 'office'
         break
       case "github":
-        window.open('https://github.com/yourusername', '_blank')
+        window.open('https://github.com/rakabimar', '_blank')
         return
       case "ai-chat":
         component = <AIChatApp />

@@ -219,12 +219,12 @@ export default function AboutPage({ onOpenApp }: AboutPageProps) {
     icon: React.ReactNode
   }) => {
     return (
-      <div className="relative w-36 h-36 shrink-0 cursor-pointer overflow-hidden rounded-2xl border border-aurora-orange/30 p-5 bg-gray-800 hover:bg-gray-700/50 transition-all duration-200">
+      <div className="relative w-28 h-28 sm:w-36 sm:h-36 shrink-0 cursor-pointer overflow-hidden rounded-xl sm:rounded-2xl border border-aurora-orange/30 p-3 sm:p-5 bg-gray-800 hover:bg-gray-700/50 transition-all duration-200">
           <div className="flex flex-col items-center justify-center h-full">
-            <div className="text-aurora-orange mb-2 flex items-center justify-center">
+            <div className="text-aurora-orange mb-1 sm:mb-2 flex items-center justify-center [&>svg]:w-5 [&>svg]:h-5 sm:[&>svg]:w-6 sm:[&>svg]:h-6">
               {icon}
             </div>
-            <h3 className="text-xs font-semibold text-aurora-white text-center leading-tight">
+            <h3 className="text-[10px] sm:text-xs font-semibold text-aurora-white text-center leading-tight">
               {title}
             </h3>
           </div>
@@ -252,14 +252,14 @@ export default function AboutPage({ onOpenApp }: AboutPageProps) {
   // Tech Stack Tool Card Component
   const TechToolCard = ({ name, logo }: { name: string; logo: string }) => {
     return (
-      <div className="group/card relative bg-gray-700/80 rounded-xl flex items-center justify-center hover:bg-aurora-coral/20 transition-all duration-300 cursor-pointer border border-gray-600 hover:border-aurora-coral/50 w-20 h-20 shrink-0 overflow-hidden">
+      <div className="group/card relative bg-gray-700/80 rounded-lg sm:rounded-xl flex items-center justify-center hover:bg-aurora-coral/20 transition-all duration-300 cursor-pointer border border-gray-600 hover:border-aurora-coral/50 w-14 h-14 sm:w-20 sm:h-20 shrink-0 overflow-hidden">
         {/* Logo - fades on hover */}
-        <span className="text-3xl transition-all duration-300 group-hover/card:opacity-20 group-hover/card:scale-110">
+        <span className="text-2xl sm:text-3xl transition-all duration-300 group-hover/card:opacity-20 group-hover/card:scale-110">
           {logo}
         </span>
         {/* Name overlay - appears on hover */}
         <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover/card:opacity-100 transition-opacity duration-300">
-          <span className="text-[11px] text-aurora-white text-center font-semibold leading-tight px-1">
+          <span className="text-[9px] sm:text-[11px] text-aurora-white text-center font-semibold leading-tight px-1">
             {name}
           </span>
         </div>
@@ -296,46 +296,46 @@ export default function AboutPage({ onOpenApp }: AboutPageProps) {
   };
 
   return (
-    <div className="h-full bg-gradient-to-br from-black via-gray-950 to-gray-900 text-aurora-white overflow-hidden flex flex-col">
+    <div className="h-full bg-gradient-to-br from-black via-gray-950 to-gray-900 text-aurora-white flex flex-col">
       {/* Header - Enhanced Contrast */}
-      <div className="bg-gradient-to-r from-black/90 via-gray-950/90 to-black/90 backdrop-blur-sm border-b border-aurora-orange/30 p-6">
-        <div className="flex items-center space-x-4">
-          <div className="w-12 h-12 bg-gradient-to-br from-aurora-orange to-aurora-coral rounded-xl flex items-center justify-center ring-2 ring-aurora-orange/50">
+      <div className="bg-gradient-to-r from-black/90 via-gray-950/90 to-black/90 backdrop-blur-sm border-b border-aurora-orange/30 p-3 sm:p-6 flex-shrink-0">
+        <div className="flex items-center space-x-3 sm:space-x-4">
+          <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-aurora-orange to-aurora-coral rounded-xl flex items-center justify-center ring-2 ring-aurora-orange/50 flex-shrink-0">
             <img
               src="images/profile/profile_picture.jpg"
               alt="Profile Picture"
               className="w-full h-full object-cover rounded-xl"
             />
           </div>
-          <div>
-            <h1 className="text-xl font-bold text-aurora-white">Rakabima Ghaniendra Rusdianto</h1>
-            <p className="text-aurora-orange text-sm font-medium">CS @ UI</p>
+          <div className="min-w-0">
+            <h1 className="text-base sm:text-xl font-bold text-aurora-white truncate">Rakabima Ghaniendra Rusdianto</h1>
+            <p className="text-aurora-orange text-xs sm:text-sm font-medium">CS @ UI</p>
           </div>
         </div>
       </div>
 
       {/* Tab Navigation - Enhanced Contrast */}
-      <div className="bg-gradient-to-r from-black/80 via-gray-900/80 to-black/80 backdrop-blur-sm border-b border-aurora-orange/20 px-6 py-4">
-        <div className="flex space-x-1">
+      <div className="bg-gradient-to-r from-black/80 via-gray-900/80 to-black/80 backdrop-blur-sm border-b border-aurora-orange/20 px-2 sm:px-6 py-2 sm:py-4 flex-shrink-0">
+        <div className="flex space-x-1 overflow-x-auto scrollbar-none pb-1">
           {tabs.map((tab) => (
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
-              className={`flex items-center space-x-2 px-4 py-2 rounded-lg font-medium transition-all duration-200 ${
+              className={`flex items-center space-x-1 sm:space-x-2 px-2 sm:px-4 py-1.5 sm:py-2 rounded-lg font-medium transition-all duration-200 whitespace-nowrap text-xs sm:text-sm flex-shrink-0 ${
                 activeTab === tab.id
                   ? "bg-gradient-to-r from-aurora-orange to-aurora-coral text-black border border-aurora-orange/50 shadow-lg"
                   : "text-gray-300 hover:bg-gray-800/50 hover:text-aurora-white border border-transparent"
               }`}
             >
               {tab.icon}
-              <span>{tab.label}</span>
+              <span className="hidden sm:inline">{tab.label}</span>
             </button>
           ))}
         </div>
       </div>
 
       {/* Content */}
-      <div className="flex-1 overflow-y-auto">
+      <div className="flex-1 overflow-y-auto overscroll-contain min-h-0" style={{ WebkitOverflowScrolling: 'touch' as const }}>
         <AnimatePresence mode="wait">
           <motion.div
             key={activeTab}
@@ -343,7 +343,7 @@ export default function AboutPage({ onOpenApp }: AboutPageProps) {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
             transition={{ duration: 0.3 }}
-            className="p-8"
+            className="p-4 sm:p-8 pb-8"
           >
             {activeTab === "summary" && (
             <div className="max-w-6xl mx-auto space-y-12">
@@ -368,10 +368,10 @@ export default function AboutPage({ onOpenApp }: AboutPageProps) {
                   <span className="text-sm text-gray-300">Available for opportunities</span>
                 </motion.div>
 
-                <h1 className="text-4xl md:text-6xl font-serif leading-tight bg-gradient-to-r from-aurora-orange via-aurora-coral to-aurora-white bg-[length:200%_auto] animate-[gradient_3s_linear_infinite] bg-clip-text text-transparent">
+                <h1 className="text-2xl sm:text-4xl md:text-6xl font-serif leading-tight bg-gradient-to-r from-aurora-orange via-aurora-coral to-aurora-white bg-[length:200%_auto] animate-[gradient_3s_linear_infinite] bg-clip-text text-transparent">
                   Engineering with a hacker's mindset.
                 </h1>
-                <p className="text-xl text-gray-300 max-w-4xl mx-auto leading-relaxed">
+                <p className="text-base sm:text-xl text-gray-300 max-w-4xl mx-auto leading-relaxed">
                   Building software worth protecting & protecting software worth building.
                 </p>
 
@@ -380,7 +380,7 @@ export default function AboutPage({ onOpenApp }: AboutPageProps) {
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.2 }}
-                  className="flex flex-wrap justify-center gap-6 pt-4"
+                  className="grid grid-cols-2 sm:flex sm:flex-wrap justify-center gap-4 sm:gap-6 pt-4"
                 >
                   {[
                     { value: "3+", label: "Years Coding" },
@@ -393,10 +393,10 @@ export default function AboutPage({ onOpenApp }: AboutPageProps) {
                       initial={{ opacity: 0, y: 10 }}
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ delay: 0.3 + index * 0.1 }}
-                      className="text-center px-4"
+                      className="text-center px-2 sm:px-4"
                     >
-                      <div className="text-2xl md:text-3xl font-bold text-aurora-orange">{stat.value}</div>
-                      <div className="text-sm text-gray-400">{stat.label}</div>
+                      <div className="text-xl sm:text-2xl md:text-3xl font-bold text-aurora-orange">{stat.value}</div>
+                      <div className="text-xs sm:text-sm text-gray-400">{stat.label}</div>
                     </motion.div>
                   ))}
                 </motion.div>
@@ -406,18 +406,18 @@ export default function AboutPage({ onOpenApp }: AboutPageProps) {
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.5 }}
-                  className="flex flex-wrap justify-center gap-4 pt-2"
+                  className="flex flex-col sm:flex-row justify-center gap-3 sm:gap-4 pt-2"
                 >
                   <button
                     onClick={() => setActiveTab("projects")}
-                    className="px-6 py-3 bg-gradient-to-r from-aurora-orange to-aurora-coral text-black font-semibold rounded-xl hover:shadow-lg hover:shadow-aurora-orange/25 transition-all duration-300 flex items-center gap-2"
+                    className="px-4 sm:px-6 py-2.5 sm:py-3 bg-gradient-to-r from-aurora-orange to-aurora-coral text-black font-semibold rounded-xl hover:shadow-lg hover:shadow-aurora-orange/25 transition-all duration-300 flex items-center justify-center gap-2 text-sm sm:text-base"
                   >
                     <Code className="w-4 h-4" />
                     View Projects
                   </button>
                   <button
                     onClick={() => setActiveTab("contact")}
-                    className="px-6 py-3 bg-gray-800 text-aurora-white font-semibold rounded-xl border border-aurora-orange/30 hover:border-aurora-orange/60 hover:bg-gray-700/50 transition-all duration-300 flex items-center gap-2"
+                    className="px-4 sm:px-6 py-2.5 sm:py-3 bg-gray-800 text-aurora-white font-semibold rounded-xl border border-aurora-orange/30 hover:border-aurora-orange/60 hover:bg-gray-700/50 transition-all duration-300 flex items-center justify-center gap-2 text-sm sm:text-base"
                   >
                     <Mail className="w-4 h-4" />
                     Get in Touch
@@ -426,7 +426,7 @@ export default function AboutPage({ onOpenApp }: AboutPageProps) {
               </motion.div>
 
               {/* Skills and Tech Stack - Side by Side */}
-              <div className="grid md:grid-cols-2 gap-8">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-8">
                 {/* My Expertise Card*/}
                 <motion.div
                   initial={{ opacity: 0, x: -60, rotateY: -15 }}
@@ -885,6 +885,7 @@ export default function AboutPage({ onOpenApp }: AboutPageProps) {
                   <motion.button
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
+                    onClick={() => onOpenApp?.('email')}
                     className="bg-gradient-to-r from-aurora-orange to-aurora-coral text-black px-8 py-4 rounded-2xl font-bold text-lg shadow-lg hover:shadow-xl transition-all duration-200 flex items-center space-x-2 mx-auto border border-aurora-orange/50"
                   >
                     <span>Send Message</span>
