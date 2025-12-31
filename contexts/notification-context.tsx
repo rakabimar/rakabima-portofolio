@@ -1,6 +1,6 @@
 "use client"
 
-import React, { createContext, useContext, useState, useCallback, ReactNode } from 'react'
+import React, { createContext, useContext, useState, useCallback, ReactNode, useRef, useEffect } from 'react'
 import { Bell, Mail, Code, Shield, Trophy, CheckCircle, AlertCircle, Info, Sparkles, User } from 'lucide-react'
 
 export interface Notification {
@@ -14,6 +14,8 @@ export interface Notification {
   timestamp: number
 }
 
+type NotificationCallback = (notification: Notification) => void
+
 interface NotificationContextType {
   notifications: Notification[]
   unreadCount: number
@@ -22,12 +24,14 @@ interface NotificationContextType {
   markAsRead: (id: string) => void
   markAllAsRead: () => void
   clearAll: () => void
+  onNotificationAdded: (callback: NotificationCallback) => () => void
 }
 
 const NotificationContext = createContext<NotificationContextType | undefined>(undefined)
 
 export function NotificationProvider({ children }: { children: ReactNode }) {
   const [notifications, setNotifications] = useState<Notification[]>([])
+  const callbacksRef = useRef<Set<NotificationCallback>>(new Set())
 
   const formatTimeAgo = (timestamp: number): string => {
     const now = Date.now()
@@ -56,6 +60,18 @@ export function NotificationProvider({ children }: { children: ReactNode }) {
     }
     
     setNotifications(prev => [newNotification, ...prev])
+    
+    // Notify all subscribers
+    callbacksRef.current.forEach(callback => callback(newNotification))
+  }, [])
+
+  // Subscribe to notification events
+  const onNotificationAdded = useCallback((callback: NotificationCallback) => {
+    callbacksRef.current.add(callback)
+    // Return unsubscribe function
+    return () => {
+      callbacksRef.current.delete(callback)
+    }
   }, [])
 
   const removeNotification = useCallback((id: string) => {
@@ -97,7 +113,8 @@ export function NotificationProvider({ children }: { children: ReactNode }) {
       removeNotification,
       markAsRead,
       markAllAsRead,
-      clearAll
+      clearAll,
+      onNotificationAdded
     }}>
       {children}
     </NotificationContext.Provider>

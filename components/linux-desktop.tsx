@@ -43,10 +43,9 @@ export default function LinuxDesktop() {
   const [showNotifications, setShowNotifications] = useState(false)
   const [currentTime, setCurrentTime] = useState(new Date())
   const [minimizedApps, setMinimizedApps] = useState<Set<string>>(new Set())
-  const hasShownWelcome = useRef(false)
 
   // Notification context
-  const { addNotification, unreadCount } = useNotifications()
+  const { addNotification, unreadCount, onNotificationAdded } = useNotifications()
 
   // Initialize restore window functions
   useEffect(() => {
@@ -55,17 +54,13 @@ export default function LinuxDesktop() {
     }
   }, [])
 
-  // Show welcome notification on first load
+  // Auto-open notification panel when a new notification arrives
   useEffect(() => {
-    if (!hasShownWelcome.current) {
-      hasShownWelcome.current = true
-      // Small delay to ensure everything is loaded
-      const timer = setTimeout(() => {
-        addNotification(NotificationTemplates.welcome())
-      }, 500)
-      return () => clearTimeout(timer)
-    }
-  }, [addNotification])
+    const unsubscribe = onNotificationAdded(() => {
+      setShowNotifications(true)
+    })
+    return unsubscribe
+  }, [onNotificationAdded])
 
   // Update time every second and sync with user's system time
   useEffect(() => {
@@ -255,11 +250,15 @@ export default function LinuxDesktop() {
     }
   }, [openApps, activeApp])
 
-  // Auto-open About Me app on initial load
+  // Auto-open About Me app and show welcome notification on initial load
   useEffect(() => {
     // Small delay to ensure component is fully mounted
     const timer = setTimeout(() => {
       openApp("about")
+      // Show welcome notification after a brief delay
+      setTimeout(() => {
+        addNotification(NotificationTemplates.welcome())
+      }, 300)
     }, 100)
     return () => clearTimeout(timer)
   }, []) // eslint-disable-line react-hooks/exhaustive-deps
