@@ -2,22 +2,25 @@
 
 import { useState, useRef, useEffect } from "react"
 import { motion, AnimatePresence } from "framer-motion"
-import { Send, Bot, User, Sparkles, MessageCircle, Settings, RefreshCw, Copy, ThumbsUp, ThumbsDown, Trash2, Download } from 'lucide-react'
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
+import { 
+  Send, 
+  Bot, 
+  User, 
+  Sparkles, 
+  Copy, 
+  Check,
+  Trash2, 
+  Download,
+  MessageCircle,
+  Zap,
+  Brain,
+  ChevronRight
+} from 'lucide-react'
 
 interface Message {
   id: string
   type: 'user' | 'assistant'
   content: string
-  timestamp: Date
-  isTyping?: boolean
-}
-
-interface ChatSession {
-  id: string
-  title: string
-  messages: Message[]
   timestamp: Date
 }
 
@@ -26,97 +29,15 @@ export default function AIChatApp() {
     {
       id: '1',
       type: 'assistant',
-      content: "Hi! I'm your AI chat assistant here to help you learn more about [Your Name]'s background, skills, and projects. Feel free to ask me anything about their experience in cybersecurity, programming, or their portfolio projects!",
+      content: "Hey there! 👋 I'm **RakAI**, your personal guide to Rakabima's portfolio. Ask me anything about his skills, projects, cybersecurity experience, or how to get in touch!",
       timestamp: new Date()
     }
   ])
   const [inputMessage, setInputMessage] = useState('')
   const [isTyping, setIsTyping] = useState(false)
-  const [chatSessions, setChatSessions] = useState<ChatSession[]>([])
-  const [currentSessionId, setCurrentSessionId] = useState<string | null>(null)
-  const [showSettings, setShowSettings] = useState(false)
+  const [copiedId, setCopiedId] = useState<string | null>(null)
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLInputElement>(null)
-
-  // Knowledge base about you (this will be used when AI API is connected)
-  const knowledgeBase = {
-    personal: {
-      name: "[Your Name]",
-      title: "Computer Science Student & Cybersecurity Enthusiast",
-      location: "[Your Location]",
-      education: "Bachelor of Science in Computer Science",
-      interests: ["Cybersecurity", "Ethical Hacking", "Web Development", "CTF Competitions"]
-    },
-    skills: {
-      programming: ["Python", "JavaScript", "TypeScript", "Java", "C++", "SQL"],
-      web: ["React", "Node.js", "Next.js", "Express", "Tailwind CSS"],
-      security: ["Penetration Testing", "Network Security", "Malware Analysis", "Digital Forensics"],
-      tools: ["Linux", "Docker", "Git", "Wireshark", "Burp Suite", "Nmap"]
-    },
-    projects: [
-      {
-        name: "Riszerve",
-        description: "Restaurant reservation system with real-time availability",
-        technologies: ["React", "Node.js", "PostgreSQL"]
-      },
-      {
-        name: "Terminal Portfolio",
-        description: "Interactive Linux desktop environment portfolio",
-        technologies: ["React", "TypeScript", "Tailwind CSS"]
-      },
-      {
-        name: "Network Scanner",
-        description: "Python-based network discovery and vulnerability assessment tool",
-        technologies: ["Python", "Scapy", "Nmap"]
-      }
-    ],
-    achievements: [
-      "PicoCTF 2023: Top 15% finish",
-      "Dean's List: Fall 2022, Spring 2023",
-      "Cybersecurity Club Vice President",
-      "CompTIA Security+ (In Progress)"
-    ],
-    contact: {
-      email: "your.email@example.com",
-      linkedin: "linkedin.com/in/yourprofile",
-      github: "github.com/yourusername"
-    }
-  }
-
-  // Sample responses for demonstration (will be replaced with AI API)
-  const getSampleResponse = (userMessage: string): string => {
-    const message = userMessage.toLowerCase()
-    
-    if (message.includes('skill') || message.includes('technology')) {
-      return `I'd be happy to tell you about their technical skills! They're proficient in programming languages like Python, JavaScript, and TypeScript, with strong experience in web development using React and Node.js. In cybersecurity, they specialize in penetration testing, network security, and malware analysis. They're also skilled with tools like Linux, Docker, Wireshark, and Burp Suite. Is there a specific skill area you'd like to know more about?`
-    }
-    
-    if (message.includes('project')) {
-      return `They have several impressive projects! Their featured work includes Riszerve (a restaurant reservation system), this interactive Terminal Portfolio you're using right now, and a Network Scanner for cybersecurity assessments. Each project demonstrates different aspects of their skills - from full-stack web development to security tools. Would you like details about any specific project?`
-    }
-    
-    if (message.includes('experience') || message.includes('background')) {
-      return `They're a Computer Science student with a strong focus on cybersecurity. They've completed a cybersecurity internship where they conducted vulnerability assessments and assisted with incident response. They're also active in CTF competitions, finishing in the top 15% of PicoCTF 2023, and serve as Vice President of their Cybersecurity Club. They're currently working toward their CompTIA Security+ certification.`
-    }
-    
-    if (message.includes('education') || message.includes('study')) {
-      return `They're pursuing a Bachelor of Science in Computer Science with coursework in Data Structures, Algorithms, Network Security, Database Systems, and Software Engineering. They've maintained Dean's List status and are actively involved in cybersecurity research and competitions.`
-    }
-    
-    if (message.includes('contact') || message.includes('reach') || message.includes('hire')) {
-      return `You can reach them through several channels! Their email is your.email@example.com, you can connect on LinkedIn at linkedin.com/in/yourprofile, or check out their code on GitHub at github.com/yourusername. They're currently open to internship and entry-level opportunities in cybersecurity and software development.`
-    }
-    
-    if (message.includes('ctf') || message.includes('competition')) {
-      return `They're very active in CTF competitions! Their notable achievement includes finishing in the top 15% of PicoCTF 2023 with over 2500 points. They regularly participate in challenges covering web exploitation, cryptography, binary exploitation, and forensics. They also contribute writeups and solutions to help the cybersecurity community learn.`
-    }
-    
-    if (message.includes('hello') || message.includes('hi') || message.includes('hey')) {
-      return `Hello! I'm here to help you learn about [Your Name]'s background and experience. They're a passionate cybersecurity enthusiast and developer with experience in both security research and full-stack development. What would you like to know about them?`
-    }
-    
-    return `That's an interesting question! While I don't have specific information about that topic, I can tell you about their skills in cybersecurity, programming projects, educational background, or professional experience. What aspect of their profile would you like to explore?`
-  }
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
@@ -127,7 +48,7 @@ export default function AIChatApp() {
   }, [messages])
 
   const handleSendMessage = async () => {
-    if (!inputMessage.trim()) return
+    if (!inputMessage.trim() || isTyping) return
 
     const userMessage: Message = {
       id: Date.now().toString(),
@@ -140,18 +61,37 @@ export default function AIChatApp() {
     setInputMessage('')
     setIsTyping(true)
 
-    // Simulate AI thinking time
-    setTimeout(() => {
-      const assistantMessage: Message = {
+    try {
+      const response = await fetch('/api/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message: userMessage.content })
+      })
+
+      const data = await response.json()
+
+      if (data.success) {
+        const assistantMessage: Message = {
+          id: (Date.now() + 1).toString(),
+          type: 'assistant',
+          content: data.response,
+          timestamp: new Date()
+        }
+        setMessages(prev => [...prev, assistantMessage])
+      } else {
+        throw new Error(data.error)
+      }
+    } catch (error) {
+      const errorMessage: Message = {
         id: (Date.now() + 1).toString(),
         type: 'assistant',
-        content: getSampleResponse(userMessage.content),
+        content: "Oops! Something went wrong. Please try again! 🔧",
         timestamp: new Date()
       }
-      
-      setMessages(prev => [...prev, assistantMessage])
+      setMessages(prev => [...prev, errorMessage])
+    } finally {
       setIsTyping(false)
-    }, 1500 + Math.random() * 1000) // Random delay between 1.5-2.5 seconds
+    }
   }
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
@@ -166,338 +106,240 @@ export default function AIChatApp() {
       {
         id: '1',
         type: 'assistant',
-        content: "Hi! I'm your AI chat assistant here to help you learn more about [Your Name]'s background, skills, and projects. Feel free to ask me anything about their experience in cybersecurity, programming, or their portfolio projects!",
+        content: "Hey there! 👋 I'm **RakAI**, your personal guide to Rakabima's portfolio. Ask me anything about his skills, projects, cybersecurity experience, or how to get in touch!",
         timestamp: new Date()
       }
     ])
   }
 
-  const copyMessage = (content: string) => {
-    navigator.clipboard.writeText(content)
+  const copyMessage = async (content: string, id: string) => {
+    await navigator.clipboard.writeText(content)
+    setCopiedId(id)
+    setTimeout(() => setCopiedId(null), 2000)
   }
 
   const exportChat = () => {
     const chatContent = messages.map(msg => 
-      `${msg.type === 'user' ? 'You' : 'AI Assistant'}: ${msg.content}`
+      `[${msg.timestamp.toLocaleTimeString()}] ${msg.type === 'user' ? 'You' : 'RakAI'}: ${msg.content}`
     ).join('\n\n')
     
     const blob = new Blob([chatContent], { type: 'text/plain' })
     const url = URL.createObjectURL(blob)
     const a = document.createElement('a')
     a.href = url
-    a.download = 'portfolio-chat.txt'
+    a.download = 'rakai-chat-export.txt'
     a.click()
     URL.revokeObjectURL(url)
   }
 
   const suggestedQuestions = [
-    "What are their main technical skills?",
-    "Tell me about their cybersecurity experience",
-    "What projects have they worked on?",
-    "How can I contact them?",
-    "What's their educational background?",
-    "Tell me about their CTF achievements"
+    { icon: <Zap className="w-3 h-3" />, text: "What are Raka's skills?" },
+    { icon: <Brain className="w-3 h-3" />, text: "Tell me about his CTF experience" },
+    { icon: <MessageCircle className="w-3 h-3" />, text: "What projects has he built?" },
+    { icon: <User className="w-3 h-3" />, text: "How can I contact him?" }
   ]
 
+  // Simple markdown-like parsing for bold text
+  const parseContent = (content: string) => {
+    const parts = content.split(/(\*\*.*?\*\*)/g)
+    return parts.map((part, i) => {
+      if (part.startsWith('**') && part.endsWith('**')) {
+        return <strong key={i} className="font-semibold text-aurora-coral">{part.slice(2, -2)}</strong>
+      }
+      return part
+    })
+  }
+
   return (
-    <div className="h-full bg-white text-gray-900 flex flex-col md:flex-row">
-      {/* Sidebar - hide on mobile, show as drawer */}
-      <div className="hidden md:flex w-64 bg-gray-50 border-r border-gray-200 flex-col">
-        {/* Header */}
-        <div className="p-4 border-b border-gray-200">
-          <div className="flex items-center space-x-3">
-            <div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-blue-500 rounded-full flex items-center justify-center">
+    <div className="h-full bg-gradient-to-br from-gray-900 via-gray-950 to-black text-aurora-white flex flex-col">
+      {/* Header */}
+      <div className="flex items-center justify-between px-4 py-3 bg-gray-900/80 border-b border-aurora-orange/20 backdrop-blur-sm">
+        <div className="flex items-center gap-3">
+          <div className="relative">
+            <div className="w-10 h-10 bg-gradient-to-br from-aurora-orange to-aurora-coral rounded-xl flex items-center justify-center shadow-lg shadow-aurora-orange/20">
               <Bot className="w-5 h-5 text-white" />
             </div>
-            <div>
-              <h2 className="font-semibold text-gray-900">AI Chat</h2>
-              <p className="text-sm text-gray-500">Portfolio Guide</p>
-            </div>
+            <div className="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-emerald-500 rounded-full border-2 border-gray-900" />
+          </div>
+          <div>
+            <h1 className="font-semibold text-aurora-white flex items-center gap-2">
+              RakAI
+              <Sparkles className="w-4 h-4 text-aurora-coral" />
+            </h1>
+            <p className="text-xs text-aurora-white/50">Portfolio Assistant</p>
           </div>
         </div>
-
-        {/* Quick Actions */}
-        <div className="p-4 space-y-2">
-          <Button
-            onClick={clearChat}
-            variant="outline"
-            size="sm"
-            className="w-full justify-start"
-          >
-            <RefreshCw className="w-4 h-4 mr-2" />
-            New Chat
-          </Button>
-          <Button
+        
+        <div className="flex items-center gap-1">
+          <button
             onClick={exportChat}
-            variant="outline"
-            size="sm"
-            className="w-full justify-start"
+            className="p-2 hover:bg-aurora-orange/10 rounded-lg transition-colors text-aurora-white/60 hover:text-aurora-coral"
+            title="Export Chat"
           >
-            <Download className="w-4 h-4 mr-2" />
-            Export Chat
-          </Button>
-          <Button
-            onClick={() => setShowSettings(!showSettings)}
-            variant="outline"
-            size="sm"
-            className="w-full justify-start"
+            <Download className="w-4 h-4" />
+          </button>
+          <button
+            onClick={clearChat}
+            className="p-2 hover:bg-aurora-orange/10 rounded-lg transition-colors text-aurora-white/60 hover:text-aurora-coral"
+            title="Clear Chat"
           >
-            <Settings className="w-4 h-4 mr-2" />
-            Settings
-          </Button>
-        </div>
-
-        {/* Suggested Questions */}
-        <div className="flex-1 p-4">
-          <h3 className="text-sm font-medium text-gray-700 mb-3">Suggested Questions</h3>
-          <div className="space-y-2">
-            {suggestedQuestions.map((question, index) => (
-              <button
-                key={index}
-                onClick={() => setInputMessage(question)}
-                className="w-full text-left p-2 text-sm text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
-              >
-                {question}
-              </button>
-            ))}
-          </div>
-        </div>
-
-        {/* AI Status */}
-        <div className="p-4 border-t border-gray-200">
-          <div className="bg-blue-50 rounded-lg p-3">
-            <div className="flex items-center space-x-2 mb-2">
-              <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-              <span className="text-sm font-medium text-blue-900">AI Status</span>
-            </div>
-            <p className="text-xs text-blue-700">
-              Ready to help you learn about the portfolio owner's background and experience.
-            </p>
-            <p className="text-xs text-gray-500 mt-1">
-              Note: AI API integration pending
-            </p>
-          </div>
+            <Trash2 className="w-4 h-4" />
+          </button>
         </div>
       </div>
 
-      {/* Main Chat Area */}
-      <div className="flex-1 flex flex-col">
-        {/* Header */}
-        <div className="p-4 border-b border-gray-200 bg-white">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-3">
-              <Sparkles className="w-6 h-6 text-purple-500" />
-              <div>
-                <h1 className="text-xl font-bold text-gray-900">Portfolio AI Chat</h1>
-                <p className="text-sm text-gray-500 hidden sm:block">Ask me anything about [Your Name]'s background and experience</p>
-              </div>
-            </div>
-            <div className="flex items-center space-x-2">
-              <button
-                className="md:hidden p-2 hover:bg-gray-100 rounded-lg"
-                onClick={() => setShowSettings(!showSettings)}
-              >
-                <Settings className="w-5 h-5 text-gray-500" />
-              </button>
-              <div className="flex items-center space-x-1 text-sm text-gray-500">
-                <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                <span className="hidden sm:inline">Online</span>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Messages */}
-        <div className="flex-1 overflow-y-auto p-4 space-y-4">
-          <AnimatePresence>
-            {messages.map((message) => (
-              <motion.div
-                key={message.id}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -20 }}
-                className={`flex ${message.type === 'user' ? 'justify-end' : 'justify-start'}`}
-              >
-                <div className={`flex space-x-3 max-w-3xl ${message.type === 'user' ? 'flex-row-reverse space-x-reverse' : ''}`}>
-                  {/* Avatar */}
-                  <div className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 ${
-                    message.type === 'user' 
-                      ? 'bg-orange-500' 
-                      : 'bg-gradient-to-br from-purple-500 to-blue-500'
-                  }`}>
-                    {message.type === 'user' ? (
-                      <User className="w-4 h-4 text-white" />
-                    ) : (
-                      <Bot className="w-4 h-4 text-white" />
-                    )}
-                  </div>
-
-                  {/* Message Content */}
-                  <div className={`flex flex-col ${message.type === 'user' ? 'items-end' : 'items-start'}`}>
-                    <div className={`px-4 py-3 rounded-2xl ${
-                      message.type === 'user'
-                        ? 'bg-orange-500 text-white'
-                        : 'bg-gray-100 text-gray-900'
-                    }`}>
-                      <p className="text-sm leading-relaxed">{message.content}</p>
-                    </div>
-                    
-                    {/* Message Actions */}
-                    <div className="flex items-center space-x-2 mt-1">
-                      <span className="text-xs text-gray-500">
-                        {message.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                      </span>
-                      {message.type === 'assistant' && (
-                        <div className="flex items-center space-x-1">
-                          <button
-                            onClick={() => copyMessage(message.content)}
-                            className="p-1 hover:bg-gray-200 rounded transition-colors"
-                            title="Copy message"
-                          >
-                            <Copy className="w-3 h-3 text-gray-400" />
-                          </button>
-                          <button className="p-1 hover:bg-gray-200 rounded transition-colors" title="Like">
-                            <ThumbsUp className="w-3 h-3 text-gray-400" />
-                          </button>
-                          <button className="p-1 hover:bg-gray-200 rounded transition-colors" title="Dislike">
-                            <ThumbsDown className="w-3 h-3 text-gray-400" />
-                          </button>
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                </div>
-              </motion.div>
-            ))}
-          </AnimatePresence>
-
-          {/* Typing Indicator */}
-          {isTyping && (
+      {/* Messages Area */}
+      <div className="flex-1 overflow-y-auto p-4 space-y-4 scrollbar-thin scrollbar-thumb-aurora-orange/20 scrollbar-track-transparent">
+        <AnimatePresence>
+          {messages.map((message) => (
             <motion.div
-              initial={{ opacity: 0, y: 20 }}
+              key={message.id}
+              initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
-              className="flex justify-start"
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.2 }}
+              className={`flex ${message.type === 'user' ? 'justify-end' : 'justify-start'}`}
             >
-              <div className="flex space-x-3 max-w-3xl">
-                <div className="w-8 h-8 rounded-full bg-gradient-to-br from-purple-500 to-blue-500 flex items-center justify-center flex-shrink-0">
-                  <Bot className="w-4 h-4 text-white" />
+              <div className={`flex gap-3 max-w-[85%] ${message.type === 'user' ? 'flex-row-reverse' : ''}`}>
+                {/* Avatar */}
+                <div className={`flex-shrink-0 w-8 h-8 rounded-lg flex items-center justify-center ${
+                  message.type === 'user' 
+                    ? 'bg-aurora-orange/20 text-aurora-coral' 
+                    : 'bg-gradient-to-br from-aurora-orange to-aurora-coral text-white'
+                }`}>
+                  {message.type === 'user' ? (
+                    <User className="w-4 h-4" />
+                  ) : (
+                    <Bot className="w-4 h-4" />
+                  )}
                 </div>
-                <div className="bg-gray-100 px-4 py-3 rounded-2xl">
-                  <div className="flex space-x-1">
-                    <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></div>
-                    <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
-                    <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
+
+                {/* Message Bubble */}
+                <div className={`flex flex-col ${message.type === 'user' ? 'items-end' : 'items-start'}`}>
+                  <div className={`px-4 py-3 rounded-2xl ${
+                    message.type === 'user'
+                      ? 'bg-gradient-to-r from-aurora-orange to-aurora-coral text-white rounded-tr-md'
+                      : 'bg-gray-800/80 text-aurora-white border border-aurora-orange/10 rounded-tl-md'
+                  }`}>
+                    <p className="text-sm leading-relaxed whitespace-pre-wrap">
+                      {parseContent(message.content)}
+                    </p>
+                  </div>
+                  
+                  {/* Message Meta */}
+                  <div className="flex items-center gap-2 mt-1 px-1">
+                    <span className="text-[10px] text-aurora-white/40">
+                      {message.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                    </span>
+                    {message.type === 'assistant' && (
+                      <button
+                        onClick={() => copyMessage(message.content, message.id)}
+                        className="p-1 hover:bg-aurora-orange/10 rounded transition-colors text-aurora-white/40 hover:text-aurora-coral"
+                        title="Copy message"
+                      >
+                        {copiedId === message.id ? (
+                          <Check className="w-3 h-3 text-emerald-400" />
+                        ) : (
+                          <Copy className="w-3 h-3" />
+                        )}
+                      </button>
+                    )}
                   </div>
                 </div>
               </div>
             </motion.div>
-          )}
+          ))}
+        </AnimatePresence>
 
-          <div ref={messagesEndRef} />
-        </div>
-
-        {/* Input Area */}
-        <div className="p-4 border-t border-gray-200 bg-white">
-          <div className="flex items-end space-x-3">
-            <div className="flex-1">
-              <Input
-                ref={inputRef}
-                value={inputMessage}
-                onChange={(e) => setInputMessage(e.target.value)}
-                onKeyPress={handleKeyPress}
-                placeholder="Ask me anything about [Your Name]..."
-                className="border-gray-300 focus:border-purple-500 focus:ring-purple-500"
-                disabled={isTyping}
-              />
-            </div>
-            <Button
-              onClick={handleSendMessage}
-              disabled={!inputMessage.trim() || isTyping}
-              className="bg-purple-500 hover:bg-purple-600 text-white px-4 py-2 flex-shrink-0"
-            >
-              <Send className="w-4 h-4" />
-            </Button>
-          </div>
-          
-          {/* Quick Suggestions - only show on larger screens or when no messages */}
-          {messages.length <= 1 && (
-            <div className="mt-3">
-              <p className="text-xs text-gray-500 mb-2">Try asking:</p>
-              <div className="flex flex-wrap gap-2">
-                {suggestedQuestions.slice(0, window.innerWidth < 768 ? 2 : 3).map((question, index) => (
-                  <button
-                    key={index}
-                    onClick={() => setInputMessage(question)}
-                    className="px-3 py-1 bg-gray-100 hover:bg-gray-200 rounded-full text-xs text-gray-600 transition-colors"
-                  >
-                    {question}
-                  </button>
-                ))}
-              </div>
-            </div>
-          )}
-        </div>
-      </div>
-
-      {/* Settings Panel - mobile overlay */}
-      {showSettings && (
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          className="fixed inset-0 bg-black/50 z-50 md:relative md:bg-transparent md:inset-auto"
-          onClick={() => setShowSettings(false)}
-        >
+        {/* Typing Indicator */}
+        {isTyping && (
           <motion.div
-            initial={{ x: '100%' }}
-            animate={{ x: 0 }}
-            exit={{ x: '100%' }}
-            className="absolute right-0 top-0 h-full w-80 bg-white border-l border-gray-200 p-4 md:relative md:w-80"
-            onClick={(e) => e.stopPropagation()}
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="flex justify-start"
           >
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="font-semibold text-gray-900">Settings</h3>
-              <button
-                onClick={() => setShowSettings(false)}
-                className="text-gray-400 hover:text-gray-600"
-              >
-                ✕
-              </button>
-            </div>
-            
-            <div className="space-y-4">
-              <div>
-                <h4 className="font-medium text-gray-700 mb-2">AI Model</h4>
-                <select className="w-full p-2 border border-gray-300 rounded-lg">
-                  <option>GPT-4 (Coming Soon)</option>
-                  <option>Claude (Coming Soon)</option>
-                  <option>Local Model (Coming Soon)</option>
-                </select>
+            <div className="flex gap-3 max-w-[85%]">
+              <div className="flex-shrink-0 w-8 h-8 rounded-lg bg-gradient-to-br from-aurora-orange to-aurora-coral flex items-center justify-center">
+                <Bot className="w-4 h-4 text-white" />
               </div>
-              
-              <div>
-                <h4 className="font-medium text-gray-700 mb-2">Response Style</h4>
-                <select className="w-full p-2 border border-gray-300 rounded-lg">
-                  <option>Professional</option>
-                  <option>Casual</option>
-                  <option>Technical</option>
-                </select>
-              </div>
-              
-              <div>
-                <h4 className="font-medium text-gray-700 mb-2">Knowledge Base</h4>
-                <div className="text-sm text-gray-600 bg-gray-50 p-3 rounded-lg">
-                  <p>• Personal background</p>
-                  <p>• Technical skills</p>
-                  <p>• Project portfolio</p>
-                  <p>• Education & achievements</p>
-                  <p>• Contact information</p>
+              <div className="bg-gray-800/80 border border-aurora-orange/10 px-4 py-3 rounded-2xl rounded-tl-md">
+                <div className="flex gap-1">
+                  {[0, 1, 2].map((i) => (
+                    <motion.div
+                      key={i}
+                      className="w-2 h-2 bg-aurora-coral rounded-full"
+                      animate={{ opacity: [0.3, 1, 0.3], scale: [0.8, 1, 0.8] }}
+                      transition={{ duration: 0.8, repeat: Infinity, delay: i * 0.15 }}
+                    />
+                  ))}
                 </div>
               </div>
             </div>
           </motion.div>
-        </motion.div>
+        )}
+
+        <div ref={messagesEndRef} />
+      </div>
+
+      {/* Suggested Questions - Show only at start */}
+      {messages.length <= 1 && (
+        <div className="px-4 pb-2">
+          <p className="text-xs text-aurora-white/40 mb-2">Quick questions:</p>
+          <div className="flex flex-wrap gap-2">
+            {suggestedQuestions.map((q, i) => (
+              <motion.button
+                key={i}
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: i * 0.1 }}
+                onClick={() => setInputMessage(q.text)}
+                className="flex items-center gap-2 px-3 py-1.5 bg-gray-800/60 hover:bg-aurora-orange/10 border border-aurora-orange/20 hover:border-aurora-orange/40 rounded-full text-xs text-aurora-white/70 hover:text-aurora-coral transition-all group"
+              >
+                <span className="text-aurora-orange/60 group-hover:text-aurora-coral">{q.icon}</span>
+                {q.text}
+                <ChevronRight className="w-3 h-3 opacity-0 group-hover:opacity-100 transition-opacity" />
+              </motion.button>
+            ))}
+          </div>
+        </div>
       )}
+
+      {/* Input Area */}
+      <div className="p-4 bg-gray-900/50 border-t border-aurora-orange/20">
+        <div className="flex items-center gap-3">
+          <div className="flex-1 relative">
+            <input
+              ref={inputRef}
+              value={inputMessage}
+              onChange={(e) => setInputMessage(e.target.value)}
+              onKeyPress={handleKeyPress}
+              placeholder="Ask me about Raka..."
+              disabled={isTyping}
+              className="w-full px-4 py-3 bg-gray-800/60 border border-aurora-orange/20 rounded-xl text-aurora-white placeholder:text-aurora-white/30 focus:outline-none focus:border-aurora-orange/50 focus:ring-1 focus:ring-aurora-orange/20 transition-all disabled:opacity-50"
+            />
+          </div>
+          <motion.button
+            onClick={handleSendMessage}
+            disabled={!inputMessage.trim() || isTyping}
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            className="p-3 bg-gradient-to-r from-aurora-orange to-aurora-coral rounded-xl text-white shadow-lg shadow-aurora-orange/20 hover:shadow-aurora-orange/40 transition-all disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:shadow-aurora-orange/20"
+          >
+            <Send className="w-5 h-5" />
+          </motion.button>
+        </div>
+        
+        {/* Status Bar */}
+        <div className="flex items-center justify-between mt-2 px-1">
+          <div className="flex items-center gap-2 text-[10px] text-aurora-white/30">
+            <div className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse" />
+            <span>RakAI v1.0 • Mock Mode</span>
+          </div>
+          <span className="text-[10px] text-aurora-white/30">
+            Press Enter to send
+          </span>
+        </div>
+      </div>
     </div>
   )
 }
