@@ -1,0 +1,140 @@
+# ===================================================
+# GitHub Actions CI/CD Pipeline
+# Deploys to GCP VPS via SSH on push to main branch
+# ===================================================
+
+name: Deploy to GCP VPS
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:  # Allow manual trigger
+
+env:
+  DOCKER_IMAGE: rakabima-portfolio
+  CONTAINER_NAME: rakabima-portfolio
+
+jobs:
+  # Job 1: Build and Test
+  build:
+    name: Build & Test
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci --legacy-peer-deps
+
+      - name: Run linter
+        run: npm run lint
+        continue-on-error: true  # Don't fail on lint warnings
+
+      - name: Build application
+        run: npm run build
+        env:
+          EMAIL_USER: ${{ secrets.EMAIL_USER }}
+          EMAIL_PASS: ${{ secrets.EMAIL_PASS }}
+
+  # Job 2: Deploy to VPS
+  deploy:
+    name: Deploy to GCP VPS
+    runs-on: ubuntu-latest
+    needs: build
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup SSH key
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.VPS_SSH_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          ssh-keyscan -H ${{ secrets.VPS_HOST }} >> ~/.ssh/known_hosts
+
+      - name: Deploy to VPS
+        env:
+          VPS_HOST: ${{ secrets.VPS_HOST }}
+          VPS_USER: ${{ secrets.VPS_USER }}
+          DEPLOY_PATH: ${{ secrets.DEPLOY_PATH }}
+          EMAIL_USER: ${{ secrets.EMAIL_USER }}
+          EMAIL_PASS: ${{ secrets.EMAIL_PASS }}
+        run: |
+          # Create deployment script
+          cat << 'DEPLOY_SCRIPT' > deploy.sh
+          #!/bin/bash
+          set -e
+          
+          echo "🚀 Starting deployment..."
+          
+          # Navigate to deployment directory
+          cd $DEPLOY_PATH
+          
+          # Pull latest changes
+          echo "📥 Pulling latest changes from main..."
+          git fetch origin main
+          git reset --hard origin/main
+          
+          # Create/update .env file
+          echo "📝 Updating environment variables..."
+          cat > .env << EOF
+          EMAIL_USER=${EMAIL_USER}
+          EMAIL_PASS=${EMAIL_PASS}
+          NODE_ENV=production
+          EOF
+          
+          # Build and restart containers
+          echo "🐳 Building and restarting Docker containers..."
+          docker compose down --remove-orphans || true
+          docker compose build --no-cache
+          docker compose up -d
+          
+          # Clean up old images
+          echo "🧹 Cleaning up old Docker images..."
+          docker image prune -f
+          
+          # Health check
+          echo "🔍 Running health check..."
+          sleep 10
+          if curl -f http://localhost:3000 > /dev/null 2>&1; then
+            echo "✅ Deployment successful! Application is running."
+          else
+            echo "⚠️ Warning: Health check failed, but container may still be starting..."
+          fi
+          
+          echo "🎉 Deployment complete!"
+          DEPLOY_SCRIPT
+          
+          # Copy and execute deployment script
+          scp deploy.sh $VPS_USER@$VPS_HOST:/tmp/deploy.sh
+          ssh $VPS_USER@$VPS_HOST "chmod +x /tmp/deploy.sh && EMAIL_USER='$EMAIL_USER' EMAIL_PASS='$EMAIL_PASS' DEPLOY_PATH='$DEPLOY_PATH' /tmp/deploy.sh"
+
+      - name: Cleanup
+        if: always()
+        run: rm -f ~/.ssh/id_rsa deploy.sh
+
+  # Job 3: Notify on completion
+  notify:
+    name: Notification
+    runs-on: ubuntu-latest
+    needs: [build, deploy]
+    if: always()
+    
+    steps:
+      - name: Deployment Status
+        run: |
+          if [ "${{ needs.deploy.result }}" == "success" ]; then
+            echo "✅ Deployment to GCP VPS completed successfully!"
+          else
+            echo "❌ Deployment failed. Please check the logs."
+            exit 1
+          fi
