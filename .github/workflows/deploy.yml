@@ -42,7 +42,7 @@ jobs:
         run: npm run build
         env:
           EMAIL_USER: ${{ secrets.EMAIL_USER }}
-          EMAIL_PASS: ${{ secrets.EMAIL_PASS }}
+          EMAIL_PASSWORD: ${{ secrets.EMAIL_PASSWORD }}
 
   # Job 2: Deploy to VPS
   deploy:
@@ -67,7 +67,9 @@ jobs:
           VPS_USER: ${{ secrets.VPS_USER }}
           DEPLOY_PATH: ${{ secrets.DEPLOY_PATH }}
           EMAIL_USER: ${{ secrets.EMAIL_USER }}
-          EMAIL_PASS: ${{ secrets.EMAIL_PASS }}
+          EMAIL_PASSWORD: ${{ secrets.EMAIL_PASSWORD }}
+          EMAIL_SERVICE: ${{ secrets.EMAIL_SERVICE }}
+          EMAIL_RECIPIENT: ${{ secrets.EMAIL_RECIPIENT }}
         run: |
           # Create deployment script
           cat << 'DEPLOY_SCRIPT' > deploy.sh
@@ -88,7 +90,9 @@ jobs:
           echo "📝 Updating environment variables..."
           cat > .env << EOF
           EMAIL_USER=${EMAIL_USER}
-          EMAIL_PASS=${EMAIL_PASS}
+          EMAIL_PASSWORD=${EMAIL_PASSWORD}
+          EMAIL_SERVICE=${EMAIL_SERVICE:-gmail}
+          EMAIL_RECIPIENT=${EMAIL_RECIPIENT:-}
           NODE_ENV=production
           EOF
           

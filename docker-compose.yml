@@ -12,7 +12,9 @@ services:
     environment:
       - NODE_ENV=production
       - EMAIL_USER=${EMAIL_USER}
-      - EMAIL_PASS=${EMAIL_PASS}
+      - EMAIL_PASSWORD=${EMAIL_PASSWORD}
+      - EMAIL_SERVICE=${EMAIL_SERVICE:-gmail}
+      - EMAIL_RECIPIENT=${EMAIL_RECIPIENT:-}
     networks:
       - vps-network
     healthcheck:
