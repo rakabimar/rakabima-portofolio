@@ -10,6 +10,7 @@ services:
     ports:
       - "3001:3000"  # External:Internal - use 3001 to avoid conflicts
     environment:
+    
       - NODE_ENV=production
       - EMAIL_USER=${EMAIL_USER}
       - EMAIL_PASSWORD=${EMAIL_PASSWORD}
