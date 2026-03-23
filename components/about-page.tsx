@@ -147,47 +147,89 @@ export default function AboutPage({ onOpenApp }: AboutPageProps) {
       id: 1,
       organization: "Universitas Indonesia",
       type: "education",
-      period: "2022 - Present",
+      period: "2023 - Present",
       positions: [
         {
-          title: "Computer Science Student",
-          timeline: "2022 - Present",
-          description: "Specializing in cybersecurity and software engineering",
-          achievements: ["Dean's List: 3 semesters", "Cybersecurity Club VP", "PicoCTF Top 15%"],
+          title: "Bachelor of Computer Science",
+          timeline: "2023 - Present",
+          description: "Faculty of Computer Science, fully funded by TELADAN Scholarship Tanoto Foundation",
+          achievements: ["GPA: 3.89/4.00", "Courses: Software Security, Ethical Hacking, Computer Networks, Advanced Programming, Database Systems"],
         },
       ],
     },
     {
       id: 2,
-      organization: "Tech Corp",
+      organization: "PT Geosys Infradata",
       type: "work",
-      period: "2023 - 2024",
+      period: "Nov 2025 - Present",
       positions: [
         {
-          title: "Security Intern",
-          timeline: "Summer 2023",
-          description: "Hands-on experience in penetration testing and security analysis",
-          achievements: ["Discovered critical vulnerabilities", "Automated security testing", "Security documentation"],
-        },
-        {
-          title: "Junior Security Analyst",
-          timeline: "2023 - 2024",
-          description: "Leading security assessments and implementing defense mechanisms",
-          achievements: ["50+ vulnerability assessments", "40% reduction in incidents", "Led incident response"],
+          title: "Cybersecurity Consultant Intern",
+          timeline: "Nov 2025 - Present",
+          description: "Orchestrated deployment of Saviynt IGA and Forescout NAC security solutions",
+          achievements: ["Managed NAC for 20,000+ hosts", "Implemented dynamic compliance rules", "Translated client requirements into security policies"],
         },
       ],
     },
     {
       id: 3,
-      organization: "Self-Learning Journey",
-      type: "milestone",
-      period: "2019 - Present",
+      organization: "RISTEK Fasilkom UI",
+      type: "work",
+      period: "Mar 2025 - Present",
       positions: [
         {
-          title: "Programming & Cybersecurity",
-          timeline: "2019 - Present",
-          description: "Continuous learning and skill development in technology",
-          achievements: ["First Python script", "Built first web app", "Joined first CTF competition"],
+          title: "Member of Network, Security & OS SIG",
+          timeline: "Mar 2025 - Present",
+          description: "Active participant in weekly CTF competitions and security research",
+          achievements: ["Top 10 rankings in 5+ CTF competitions", "Training: Web Exploitation, Binary Exploitation, Forensics", "CVE analysis and threat landscape research"],
+        },
+      ],
+    },
+    {
+      id: 4,
+      organization: "Faculty of Computer Science, Universitas Indonesia",
+      type: "work",
+      period: "Jan 2025 - Dec 2025 · 1 yr",
+      positions: [
+        {
+          title: "Teaching Assistant of Data Structures and Algorithms",
+          timeline: "Jul 2025 - Dec 2025 · 6 mos",
+          description: "Designed weekly lab assignments to challenge students' understanding of algorithmic efficiency and implementation",
+          achievements: ["Conducted live coding demonstration tests to evaluate problem-solving skills", "Led comprehensive review sessions for mid-term and final examinations", "Managed 70 students with technical guidance on data structure implementations"],
+        },
+        {
+          title: "Teaching Assistant of Discrete Mathematics 2",
+          timeline: "Jan 2025 - Jun 2025 · 6 mos",
+          description: "Prepared and evaluated quizzes to assess students' understanding of course material",
+          achievements: ["Clarified complex topics through review sessions and individual support", "Assisted lecturer during lectures and promoted active student engagement"],
+        },
+      ],
+    },
+    {
+      id: 5,
+      organization: "Tanoto Scholars Association UI",
+      type: "work",
+      period: "Feb 2024 - Dec 2024",
+      positions: [
+        {
+          title: "Project Manager",
+          timeline: "Feb 2024 - Dec 2024",
+          description: "Led team of 30+ members on SDG-aligned community engagement initiatives",
+          achievements: ["Pitched and executed sustainability projects", "Cross-division collaboration", "Successful community engagement outcomes"],
+        },
+      ],
+    },
+    {
+      id: 6,
+      organization: "SMA Pradita Dirgantara",
+      type: "education",
+      period: "2020 - 2023",
+      positions: [
+        {
+          title: "Natural Science Track",
+          timeline: "2020 - 2023",
+          description: "Fully funded scholarship recipient",
+          achievements: ["Grade: 95.31/100", "Head of Informatics Extracurricular", "OSN Informatika Representative"],
         },
       ],
     },
@@ -792,6 +834,7 @@ export default function AboutPage({ onOpenApp }: AboutPageProps) {
                     Discover the innovative solutions I've built, from cybersecurity tools to full-stack applications.
                   </p>
                   <motion.button
+                    onClick={() => onOpenApp?.("projects")}
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
                     className="bg-gradient-to-r from-aurora-orange to-aurora-coral text-black px-8 py-4 rounded-2xl font-bold text-lg shadow-lg hover:shadow-xl transition-all duration-200 flex items-center space-x-2 mx-auto border border-aurora-orange/50"

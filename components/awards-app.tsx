@@ -28,89 +28,117 @@ interface AwardItem {
   location: string
   date: string
   articleUrl?: string
-  category: 'competition' | 'academic' | 'certification' | 'recognition'
+  credentialUrl?: string // For certification verification
+  image?: string // Placeholder for award/cert image
+  category: 'competition' | 'certification' | 'bugbounty'
   featured?: boolean
+  role?: string
+  keyAchievement?: string
 }
 
 const awards: AwardItem[] = [
+  // ============ COMPETITIONS ============
   {
     id: '1',
-    name: 'PicoCTF 2024',
-    organizer: 'Carnegie Mellon University',
-    description: 'Achieved top 15% placement in the world\'s largest cybersecurity competition for students, demonstrating strong skills in cryptography, forensics, web exploitation, and reverse engineering.',
-    place: 'Top 15% Global',
-    prize: 'Certificate of Achievement',
-    location: 'Online (Global)',
-    date: 'March 2024',
-    articleUrl: 'https://picoctf.org',
+    name: 'Bug Bounty Competition 2025',
+    organizer: 'Pusdatin, Kemendikdasmen (Indonesia Ministry of Education)',
+    description: 'Secured the championship title by identifying and responsibly reporting five critical web application vulnerabilities categorized under the OWASP Top 10.',
+    place: '1st Place',
+    prize: 'Champion Title & Recognition',
+    location: 'Indonesia',
+    date: '2025',
     category: 'competition',
-    featured: true
+    featured: true,
+    role: 'Security Researcher / Bug Hunter',
+    keyAchievement: 'Demonstrated technical expertise and strong communication skills through a rigorous two-phase process: a month-long intensive bug-hunting period followed by a final technical presentation to a panel of judges.',
+    image: '/images/awards/bugbounty-2025.png' // TODO: Replace with actual image
   },
   {
     id: '2',
-    name: 'Dean\'s List Award',
-    organizer: 'Universitas Indonesia',
-    description: 'Recognized for outstanding academic performance with a GPA in the top percentile of the Computer Science program for three consecutive semesters.',
-    place: 'Academic Excellence',
-    prize: 'Academic Recognition',
-    location: 'Depok, Indonesia',
-    date: '2022 - 2024',
-    category: 'academic',
-    featured: true
+    name: 'BPJS Healthkathon: Security Competition',
+    organizer: 'BPJS Kesehatan (Indonesia Public Healthcare)',
+    description: 'Achieved runner-up status in a comprehensive healthcare security hackathon involving three distinct phases: Capture The Flag (CTF), live Penetration Testing, and Executive Reporting.',
+    place: '2nd Place',
+    prize: 'Runner-up Award',
+    location: 'Indonesia',
+    date: '2025',
+    category: 'competition',
+    featured: true,
+    role: 'Team Member (Team of 3)',
+    keyAchievement: 'Successfully executed an end-to-end security assessment, transitioning from solving rapid-fire CTF challenges to performing deep-dive penetration testing on infrastructure, culminating in a professional report presentation.',
+    image: '/images/awards/bpjs-healthkathon.png' // TODO: Replace with actual image
   },
   {
     id: '3',
-    name: 'Hackathon UI 2023',
-    organizer: 'CSUI',
-    description: 'Developed an innovative security solution for IoT devices, implementing real-time threat detection and automated response mechanisms.',
-    place: '2nd Place',
-    prize: 'IDR 5,000,000',
-    location: 'Jakarta, Indonesia',
-    date: 'October 2023',
+    name: 'University CTF 2025',
+    organizer: 'Hack The Box',
+    description: 'Competed against top university teams from around the globe, achieving a Top 5 international ranking.',
+    place: '4th Place Worldwide',
+    prize: 'International Recognition',
+    location: 'Online (Global)',
+    date: '2025',
     category: 'competition',
-    featured: true
+    featured: true,
+    role: 'Team Member (RISTEK NetSOS Fasilkom UI)',
+    keyAchievement: 'Collaborated with the RISTEK NetSOS team to solve complex cybersecurity challenges, demonstrating advanced problem-solving capabilities in a high-pressure, competitive global environment.',
+    image: '/images/awards/htb-uni-ctf.png' // TODO: Replace with actual image
   },
+  // ============ CERTIFICATIONS ============
   {
     id: '4',
-    name: 'Best Security Project',
-    organizer: 'Software Engineering Course - UI',
-    description: 'Awarded for developing the most comprehensive security implementation in the semester project, featuring secure authentication, encryption, and vulnerability scanning.',
-    place: 'Best Project',
-    prize: 'A+ Grade & Recognition',
-    location: 'Universitas Indonesia',
-    date: 'December 2023',
-    category: 'academic'
+    name: 'eJPT (eLearnSecurity Junior Penetration Tester)',
+    organizer: 'INE',
+    description: 'Validates practical, hands-on penetration testing skills, including assessment methodologies, host-based attacks, and network security auditing.',
+    place: 'Certified',
+    location: 'Online',
+    date: '2025',
+    category: 'certification',
+    credentialUrl: 'https://certs.ine.com/', // TODO: Replace with actual credential URL
+    image: '/images/certs/ejpt.png' // TODO: Replace with actual image
   },
   {
     id: '5',
-    name: 'CTF National Competition',
-    organizer: 'Cyber Security Indonesia',
-    description: 'Competed against top university teams nationwide in various cybersecurity challenges including binary exploitation, cryptography, and network security.',
-    place: '5th Place',
-    prize: 'Certificate & Swag',
-    location: 'Bandung, Indonesia',
-    date: 'August 2023',
-    category: 'competition'
+    name: 'Saviynt Certified IGA Professional',
+    organizer: 'Saviynt',
+    description: 'Demonstrates specialized expertise in Identity Governance and Administration (IGA), focusing on identity lifecycle management and access governance.',
+    place: 'Certified',
+    location: 'Online',
+    date: '2025',
+    category: 'certification',
+    credentialUrl: 'https://saviynt.com/', // TODO: Replace with actual credential URL
+    image: '/images/certs/saviynt.png' // TODO: Replace with actual image
   },
   {
     id: '6',
-    name: 'Cybersecurity Club Leadership',
-    organizer: 'CSUI Student Organization',
-    description: 'Elected as Vice President of the Cybersecurity Club, organizing workshops, CTF practice sessions, and guest speaker events for 200+ members.',
-    place: 'Vice President',
-    prize: 'Leadership Role',
-    location: 'Universitas Indonesia',
-    date: '2023 - Present',
-    category: 'recognition'
+    name: 'Forescout Accredited Engineer',
+    organizer: 'Forescout',
+    description: 'Certifies technical proficiency in Network Access Control (NAC), device visibility, and automated security control implementation.',
+    place: 'Certified',
+    location: 'Online',
+    date: '2025',
+    category: 'certification',
+    credentialUrl: 'https://forescout.com/', // TODO: Replace with actual credential URL
+    image: '/images/certs/forescout.png' // TODO: Replace with actual image
+  },
+  {
+    id: '7',
+    name: 'ICCA (INE Certified Cybersecurity Associate)',
+    organizer: 'INE',
+    description: 'Validates foundational knowledge in cybersecurity concepts, network defense, and protocol analysis.',
+    place: 'Certified',
+    location: 'Online',
+    date: '2025',
+    category: 'certification',
+    credentialUrl: 'https://certs.ine.com/', // TODO: Replace with actual credential URL
+    image: '/images/certs/icca.png' // TODO: Replace with actual image
   }
 ]
 
 const categories = [
-  { id: 'all', name: 'All Awards', icon: <Sparkles className="w-4 h-4" /> },
+  { id: 'all', name: 'All', icon: <Sparkles className="w-4 h-4" /> },
   { id: 'competition', name: 'Competitions', icon: <Trophy className="w-4 h-4" /> },
-  { id: 'academic', name: 'Academic', icon: <Medal className="w-4 h-4" /> },
   { id: 'certification', name: 'Certifications', icon: <Award className="w-4 h-4" /> },
-  { id: 'recognition', name: 'Recognition', icon: <Star className="w-4 h-4" /> }
+  { id: 'bugbounty', name: 'Bug Bounty', icon: <Target className="w-4 h-4" /> }
 ]
 
 export default function AwardsApp() {
@@ -132,23 +160,17 @@ export default function AwardsApp() {
           color: 'text-aurora-orange',
           bg: 'bg-aurora-orange/10 border-aurora-orange/30'
         }
-      case 'academic':
-        return { 
-          icon: <Medal className="w-4 h-4" />,
-          color: 'text-aurora-coral',
-          bg: 'bg-aurora-coral/10 border-aurora-coral/30'
-        }
       case 'certification':
         return { 
           icon: <Award className="w-4 h-4" />,
           color: 'text-emerald-400',
           bg: 'bg-emerald-500/10 border-emerald-500/30'
         }
-      case 'recognition':
+      case 'bugbounty':
         return { 
-          icon: <Star className="w-4 h-4" />,
-          color: 'text-amber-400',
-          bg: 'bg-amber-500/10 border-amber-500/30'
+          icon: <Target className="w-4 h-4" />,
+          color: 'text-aurora-coral',
+          bg: 'bg-aurora-coral/10 border-aurora-coral/30'
         }
       default:
         return { 
@@ -159,8 +181,11 @@ export default function AwardsApp() {
     }
   }
 
-  const getPlaceIcon = (place: string) => {
+  const getPlaceIcon = (place: string, category?: AwardItem['category']) => {
     const lowerPlace = place.toLowerCase()
+    if (category === 'certification') {
+      return <Award className="w-5 h-5 text-emerald-400" />
+    }
     if (lowerPlace.includes('1st') || lowerPlace.includes('first') || lowerPlace.includes('best')) {
       return <Crown className="w-5 h-5 text-yellow-400" />
     }
@@ -170,7 +195,7 @@ export default function AwardsApp() {
     if (lowerPlace.includes('3rd') || lowerPlace.includes('third')) {
       return <Medal className="w-5 h-5 text-amber-600" />
     }
-    if (lowerPlace.includes('top')) {
+    if (lowerPlace.includes('4th') || lowerPlace.includes('fourth') || lowerPlace.includes('top')) {
       return <Target className="w-5 h-5 text-aurora-orange" />
     }
     return <Trophy className="w-5 h-5 text-aurora-coral" />
@@ -178,6 +203,7 @@ export default function AwardsApp() {
 
   const AwardCard = ({ award, isFeatured = false }: { award: AwardItem; isFeatured?: boolean }) => {
     const categoryConfig = getCategoryConfig(award.category)
+    const isCertification = award.category === 'certification'
 
     return (
       <motion.div
@@ -198,16 +224,33 @@ export default function AwardsApp() {
           </div>
         )}
 
+        {/* Award/Cert Image */}
+        {award.image && (
+          <div className="relative h-32 bg-gradient-to-br from-gray-800 to-gray-900 overflow-hidden">
+            <img 
+              src={award.image} 
+              alt={award.name}
+              className="w-full h-full object-contain p-4 opacity-90 group-hover:opacity-100 transition-opacity"
+              onError={(e) => {
+                // Hide image on error, show placeholder
+                (e.target as HTMLImageElement).style.display = 'none'
+              }}
+            />
+            {/* Gradient overlay */}
+            <div className="absolute inset-0 bg-gradient-to-t from-gray-900 via-transparent to-transparent" />
+          </div>
+        )}
+
         <div className="p-6">
           {/* Header */}
           <div className="flex items-start gap-4 mb-4">
             <div className={`p-3 rounded-xl border ${categoryConfig.bg}`}>
               <div className={categoryConfig.color}>
-                {getPlaceIcon(award.place)}
+                {getPlaceIcon(award.place, award.category)}
               </div>
             </div>
             <div className="flex-1 min-w-0">
-              <h3 className="font-bold text-lg text-aurora-white group-hover:text-aurora-orange transition-colors line-clamp-1">
+              <h3 className="font-bold text-lg text-aurora-white group-hover:text-aurora-orange transition-colors">
                 {award.name}
               </h3>
               <div className="flex items-center gap-2 text-gray-400 text-sm mt-1">
@@ -217,10 +260,22 @@ export default function AwardsApp() {
             </div>
           </div>
 
+          {/* Role (if exists) */}
+          {award.role && (
+            <div className="mb-3">
+              <span className="text-xs text-gray-500">Role: </span>
+              <span className="text-sm text-gray-300">{award.role}</span>
+            </div>
+          )}
+
           {/* Place Badge */}
           <div className="mb-4">
-            <span className="inline-flex items-center gap-2 px-3 py-1.5 bg-aurora-orange/10 text-aurora-orange rounded-lg border border-aurora-orange/20 font-semibold text-sm">
-              {getPlaceIcon(award.place)}
+            <span className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-lg font-semibold text-sm border ${
+              isCertification 
+                ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' 
+                : 'bg-aurora-orange/10 text-aurora-orange border-aurora-orange/20'
+            }`}>
+              {getPlaceIcon(award.place, award.category)}
               {award.place}
             </span>
           </div>
@@ -242,8 +297,8 @@ export default function AwardsApp() {
             </div>
           </div>
 
-          {/* Prize (if exists) */}
-          {award.prize && (
+          {/* Prize (if exists) - for competitions */}
+          {award.prize && !isCertification && (
             <div className="mt-4 pt-4 border-t border-gray-800">
               <div className="flex items-center gap-2 text-sm">
                 <Gift className="w-4 h-4 text-aurora-coral" />
@@ -252,8 +307,24 @@ export default function AwardsApp() {
             </div>
           )}
 
+          {/* Verify Credential Button - for certifications */}
+          {isCertification && award.credentialUrl && (
+            <div className="mt-4 pt-4 border-t border-gray-800">
+              <button
+                onClick={(e) => {
+                  e.stopPropagation()
+                  window.open(award.credentialUrl, '_blank')
+                }}
+                className="flex items-center gap-2 text-sm text-emerald-400 hover:text-emerald-300 transition-colors"
+              >
+                <ExternalLink className="w-4 h-4" />
+                <span>Verify Credential</span>
+              </button>
+            </div>
+          )}
+
           {/* Category Badge */}
-          <div className="absolute bottom-6 right-6">
+          <div className="mt-4 flex justify-end">
             <span className={`flex items-center gap-1.5 px-2 py-1 rounded-full text-xs font-medium border ${categoryConfig.bg} ${categoryConfig.color}`}>
               {categoryConfig.icon}
               <span className="capitalize">{award.category}</span>
@@ -282,7 +353,7 @@ export default function AwardsApp() {
             </h1>
           </div>
           <p className="text-gray-400 text-lg">
-            Recognition for excellence in competitions, academics, and leadership
+            Recognition from competitions, certifications, and bug bounty programs
           </p>
         </motion.div>
 
@@ -294,10 +365,10 @@ export default function AwardsApp() {
           className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8"
         >
           {[
-            { value: awards.length, label: 'Total Awards', icon: <Trophy className="w-5 h-5" /> },
+            { value: awards.length, label: 'Total', icon: <Trophy className="w-5 h-5" /> },
             { value: awards.filter(a => a.category === 'competition').length, label: 'Competitions', icon: <Target className="w-5 h-5" /> },
-            { value: awards.filter(a => a.category === 'academic').length, label: 'Academic', icon: <Medal className="w-5 h-5" /> },
-            { value: featuredAwards.length, label: 'Featured', icon: <Star className="w-5 h-5" /> },
+            { value: awards.filter(a => a.category === 'certification').length, label: 'Certifications', icon: <Award className="w-5 h-5" /> },
+            { value: awards.filter(a => a.category === 'bugbounty').length, label: 'Bug Bounty', icon: <Star className="w-5 h-5" /> },
           ].map((stat, index) => (
             <motion.div
               key={stat.label}
@@ -434,7 +505,7 @@ export default function AwardsApp() {
                 <div className="flex items-start gap-4 pr-12">
                   <div className={`p-4 rounded-xl border ${getCategoryConfig(selectedAward.category).bg}`}>
                     <div className={getCategoryConfig(selectedAward.category).color}>
-                      {getPlaceIcon(selectedAward.place)}
+                      {getPlaceIcon(selectedAward.place, selectedAward.category)}
                     </div>
                   </div>
                   <div>
@@ -461,22 +532,58 @@ export default function AwardsApp() {
 
               {/* Modal Content */}
               <div className="p-6 overflow-y-auto max-h-[calc(90vh-200px)]">
+                {/* Award/Cert Image */}
+                {selectedAward.image && (
+                  <div className="mb-6 rounded-xl overflow-hidden bg-gradient-to-br from-gray-800 to-gray-900 border border-gray-700">
+                    <img 
+                      src={selectedAward.image} 
+                      alt={selectedAward.name}
+                      className="w-full h-48 object-contain p-4"
+                      onError={(e) => {
+                        (e.target as HTMLImageElement).style.display = 'none'
+                      }}
+                    />
+                  </div>
+                )}
+
                 {/* Place Badge */}
                 <div className="mb-6">
-                  <div className="inline-flex items-center gap-3 px-4 py-3 bg-aurora-orange/10 rounded-xl border border-aurora-orange/20">
-                    {getPlaceIcon(selectedAward.place)}
+                  <div className={`inline-flex items-center gap-3 px-4 py-3 rounded-xl border ${
+                    selectedAward.category === 'certification'
+                      ? 'bg-emerald-500/10 border-emerald-500/20'
+                      : 'bg-aurora-orange/10 border-aurora-orange/20'
+                  }`}>
+                    {getPlaceIcon(selectedAward.place, selectedAward.category)}
                     <div>
                       <div className="text-sm text-gray-400">Achievement</div>
-                      <div className="text-lg font-bold text-aurora-orange">{selectedAward.place}</div>
+                      <div className={`text-lg font-bold ${
+                        selectedAward.category === 'certification' ? 'text-emerald-400' : 'text-aurora-orange'
+                      }`}>{selectedAward.place}</div>
                     </div>
                   </div>
                 </div>
+
+                {/* Role (if exists) */}
+                {selectedAward.role && (
+                  <div className="mb-6">
+                    <h3 className="font-semibold text-aurora-orange mb-2">Role</h3>
+                    <p className="text-gray-300">{selectedAward.role}</p>
+                  </div>
+                )}
 
                 {/* Description */}
                 <div className="mb-6">
                   <h3 className="font-semibold text-aurora-orange mb-2">Description</h3>
                   <p className="text-gray-300 leading-relaxed">{selectedAward.description}</p>
                 </div>
+
+                {/* Key Achievement (if exists) */}
+                {selectedAward.keyAchievement && (
+                  <div className="mb-6">
+                    <h3 className="font-semibold text-aurora-orange mb-2">Key Achievement</h3>
+                    <p className="text-gray-300 leading-relaxed">{selectedAward.keyAchievement}</p>
+                  </div>
+                )}
 
                 {/* Details Grid */}
                 <div className="grid grid-cols-2 gap-4 mb-6">
@@ -494,7 +601,7 @@ export default function AwardsApp() {
                     </div>
                     <div className="text-aurora-white font-medium">{selectedAward.date}</div>
                   </div>
-                  {selectedAward.prize && (
+                  {selectedAward.prize && selectedAward.category !== 'certification' && (
                     <div className="col-span-2 bg-gray-800/50 rounded-xl p-4 border border-gray-700">
                       <div className="flex items-center gap-2 text-gray-400 text-sm mb-1">
                         <Gift className="w-4 h-4" />
@@ -504,6 +611,19 @@ export default function AwardsApp() {
                     </div>
                   )}
                 </div>
+
+                {/* Credential Verification Button - for certifications */}
+                {selectedAward.category === 'certification' && selectedAward.credentialUrl && (
+                  <motion.button
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                    onClick={() => window.open(selectedAward.credentialUrl, '_blank')}
+                    className="w-full flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-emerald-500 to-emerald-600 text-white font-bold rounded-xl hover:shadow-lg hover:shadow-emerald-500/25 transition-all mb-4"
+                  >
+                    <ExternalLink className="w-5 h-5" />
+                    Verify Credential
+                  </motion.button>
+                )}
 
                 {/* Article Link */}
                 {selectedAward.articleUrl && (
