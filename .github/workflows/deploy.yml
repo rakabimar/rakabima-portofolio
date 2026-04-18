@@ -1,9 +1,9 @@
 # ===================================================
 # GitHub Actions CI/CD Pipeline
-# Deploys to GCP VPS via SSH on push to main branch
+# Deploys to Biznet VPS via SSH on push to main branch
 # ===================================================
 
-name: Deploy to GCP VPS
+name: Deploy to Biznet VPS
 
 on:
   push:
@@ -46,7 +46,7 @@ jobs:
 
   # Job 2: Deploy to VPS
   deploy:
-    name: Deploy to GCP VPS
+    name: Deploy to Biznet VPS
     runs-on: ubuntu-latest
     needs: build
     
@@ -118,9 +118,9 @@ jobs:
           echo "🎉 Deployment complete!"
           DEPLOY_SCRIPT
           
-          # Copy and execute deployment script
+          # Copy and execute deployment script (Fixed EMAIL_PASSWORD variable mapping)
           scp deploy.sh $VPS_USER@$VPS_HOST:/tmp/deploy.sh
-          ssh $VPS_USER@$VPS_HOST "chmod +x /tmp/deploy.sh && EMAIL_USER='$EMAIL_USER' EMAIL_PASS='$EMAIL_PASS' DEPLOY_PATH='$DEPLOY_PATH' /tmp/deploy.sh"
+          ssh $VPS_USER@$VPS_HOST "chmod +x /tmp/deploy.sh && EMAIL_USER='$EMAIL_USER' EMAIL_PASSWORD='$EMAIL_PASSWORD' DEPLOY_PATH='$DEPLOY_PATH' /tmp/deploy.sh"
 
       - name: Cleanup
         if: always()
@@ -137,7 +137,7 @@ jobs:
       - name: Deployment Status
         run: |
           if [ "${{ needs.deploy.result }}" == "success" ]; then
-            echo "✅ Deployment to GCP VPS completed successfully!"
+            echo "✅ Deployment to Biznet VPS completed successfully!"
           else
             echo "❌ Deployment failed. Please check the logs."
             exit 1
