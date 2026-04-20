@@ -145,6 +145,31 @@ export default function LinuxDesktop() {
     position: getIconPosition(index)
   }))
 
+  const getCenteredAboutWindow = useCallback(() => {
+    if (typeof window === 'undefined') {
+      return {
+        size: { width: 1320, height: 820 },
+        position: { x: 100, y: 100 }
+      }
+    }
+
+    const sideMargin = 48
+    const topMargin = 48
+    const bottomMargin = 96
+    const usableWidth = Math.max(300, window.innerWidth - sideMargin * 2)
+    const usableHeight = Math.max(300, window.innerHeight - topMargin - bottomMargin)
+    const size = {
+      width: Math.min(1320, usableWidth),
+      height: Math.min(820, usableHeight)
+    }
+    const position = {
+      x: Math.max(sideMargin, Math.round((window.innerWidth - size.width) / 2)),
+      y: Math.max(topMargin, Math.round(topMargin + (usableHeight - size.height) / 2))
+    }
+
+    return { size, position }
+  }, [])
+
   const openApp = useCallback((appId: string) => {
     if (openApps.find(app => app.id === appId)) {
       setActiveApp(appId)
@@ -152,44 +177,47 @@ export default function LinuxDesktop() {
     }
 
     let component: React.ReactNode
-    let size = { width: 800, height: 600 }
+    let size = { width: 900, height: 600 }
     let position = { x: 100 + openApps.length * 50, y: 100 + openApps.length * 50 }
     let category: App['category'] = 'system'
 
     switch (appId) {
       case "terminal":
         component = <Terminal />
-        size = { width: 900, height: 650 }
+        size = { width: 1020, height: 650 }
         category = 'development'
         break
       case "file-manager":
         component = <FileManager />
-        size = { width: 800, height: 600 }
+        size = { width: 900, height: 600 }
         category = 'system'
         break
-      case "about":
+      case "about": {
         component = <AboutPage onOpenApp={openApp} />
-        size = { width: 900, height: 700 }
+        const aboutWindow = getCenteredAboutWindow()
+        size = aboutWindow.size
+        position = aboutWindow.position
         category = 'favorites'
         break
+      }
       case "projects":
         component = <ProjectsGallery />
-        size = { width: 1000, height: 750 }
+        size = { width: 1120, height: 750 }
         category = 'development'
         break
       case "email":
         component = <LinuxEmailApp />
-        size = { width: 1000, height: 700 }
+        size = { width: 1120, height: 700 }
         category = 'internet'
         break
       case "resume":
         component = <ResumeApp />
-        size = { width: 800, height: 700 }
+        size = { width: 900, height: 700 }
         category = 'office'
         break
       case "awards":
         component = <AwardsApp />
-        size = { width: 1000, height: 750 }
+        size = { width: 1120, height: 750 }
         category = 'office'
         break
       case "settings":
@@ -197,7 +225,7 @@ export default function LinuxDesktop() {
           <h2 className="text-2xl font-bold mb-4">System Settings</h2>
           <p>Settings panel coming soon...</p>
         </div>
-        size = { width: 600, height: 400 }
+        size = { width: 680, height: 400 }
         category = 'system'
         break
       case "calculator":
@@ -205,7 +233,7 @@ export default function LinuxDesktop() {
           <h2 className="text-2xl font-bold mb-4">Calculator</h2>
           <p>Calculator app coming soon...</p>
         </div>
-        size = { width: 400, height: 500 }
+        size = { width: 460, height: 500 }
         category = 'office'
         break
       case "github":
@@ -213,7 +241,7 @@ export default function LinuxDesktop() {
         return
       case "ai-chat":
         component = <AIChatApp />
-        size = { width: 1200, height: 800 }
+        size = { width: 1320, height: 800 }
         category = 'internet'
         break
       default:
@@ -240,7 +268,7 @@ export default function LinuxDesktop() {
     setOpenApps(prev => [...prev, newApp])
     setActiveApp(appId)
     setShowLauncher(false)
-  }, [openApps, allApplications])
+  }, [openApps, allApplications, getCenteredAboutWindow])
 
   const closeApp = useCallback((appId: string) => {
     setOpenApps(prev => prev.filter(app => app.id !== appId))

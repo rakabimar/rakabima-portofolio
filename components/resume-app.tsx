@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { motion } from "framer-motion"
 import { Download, ZoomIn, ZoomOut, RotateCw, Maximize2, FileText, ExternalLink } from 'lucide-react'
 import { useNotifications, NotificationTemplates } from "@/contexts/notification-context"
@@ -10,9 +10,20 @@ const PDF_PATH = "/documents/CV.pdf"
 
 export default function ResumeApp() {
   const [scale, setScale] = useState(100)
+  const [isMobile, setIsMobile] = useState(false)
   const [isLoading, setIsLoading] = useState(true)
   const [hasError, setHasError] = useState(false)
   const { addNotification } = useNotifications()
+
+  useEffect(() => {
+    const mediaQuery = window.matchMedia("(max-width: 767px)")
+    const updateIsMobile = () => setIsMobile(mediaQuery.matches)
+
+    updateIsMobile()
+    mediaQuery.addEventListener("change", updateIsMobile)
+
+    return () => mediaQuery.removeEventListener("change", updateIsMobile)
+  }, [])
 
   const handleDownload = () => {
     const link = document.createElement('a')
@@ -131,7 +142,7 @@ export default function ResumeApp() {
 
           {/* PDF Embed */}
           <iframe
-            src={`${PDF_PATH}#toolbar=0&navpanes=0&scrollbar=1`}
+            src={`${PDF_PATH}#toolbar=0&navpanes=0&scrollbar=${isMobile ? 0 : 1}`}
             className="w-full border-0"
             style={{
               height: `${Math.max(500, 700 * (scale / 100))}px`,

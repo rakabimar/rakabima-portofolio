@@ -37,101 +37,157 @@ interface AwardItem {
 }
 
 const awards: AwardItem[] = [
-  // ============ COMPETITIONS ============
   {
     id: '1',
-    name: 'Bug Bounty Competition 2025',
-    organizer: 'Pusdatin, Kemendikdasmen (Indonesia Ministry of Education)',
-    description: 'Secured the championship title by identifying and responsibly reporting five critical web application vulnerabilities categorized under the OWASP Top 10.',
+    name: 'Pentest TNI 2026',
+    organizer: 'Dislitbang TNI AD',
+    description: 'Won the national pentesting competition through practical offensive security execution, technical analysis, and reporting under competition constraints.',
     place: '1st Place',
-    prize: 'Champion Title & Recognition',
+    prize: 'National Champion',
     location: 'Indonesia',
-    date: '2025',
+    date: '2026',
     category: 'competition',
     featured: true,
-    role: 'Security Researcher / Bug Hunter',
-    keyAchievement: 'Demonstrated technical expertise and strong communication skills through a rigorous two-phase process: a month-long intensive bug-hunting period followed by a final technical presentation to a panel of judges.',
-    image: '/images/awards/bugbounty-2025.png' // TODO: Replace with actual image
+    role: 'Competitor',
+    keyAchievement: 'Validated offensive security depth through a first-place national finish.',
+    image: '/images/awards/pentest-tni-2026.png'
   },
   {
     id: '2',
-    name: 'BPJS Healthkathon: Security Competition',
-    organizer: 'BPJS Kesehatan (Indonesia Public Healthcare)',
-    description: 'Achieved runner-up status in a comprehensive healthcare security hackathon involving three distinct phases: Capture The Flag (CTF), live Penetration Testing, and Executive Reporting.',
+    name: 'University CTF 2025',
+    organizer: 'Hack The Box',
+    description: 'Competed against top university teams worldwide and finished 4th globally in a high-level cybersecurity competition.',
+    place: '4th Place Worldwide',
+    prize: 'International Recognition',
+    location: 'Global',
+    date: '2025',
+    category: 'competition',
+    featured: true,
+    role: 'Team Member',
+    keyAchievement: 'Delivered an international top-5 result with RISTEK Fasilkom UI.',
+    image: '/images/awards/university-ctf-2025.png'
+  },
+  {
+    id: '3',
+    name: 'Bug Bounty 2025',
+    organizer: 'Pusdatin Kemendikdasmen',
+    description: 'Won the national bug bounty event by identifying impactful web vulnerabilities and presenting findings effectively.',
+    place: '1st Place',
+    prize: 'National Champion',
+    location: 'Indonesia',
+    date: '2025',
+    category: 'bugbounty',
+    featured: true,
+    role: 'Security Researcher',
+    keyAchievement: 'Turned vulnerability discovery into a first-place competitive result.',
+    image: '/images/awards/bug-bounty-2025.png'
+  },
+  {
+    id: '4',
+    name: 'BPJS Healthkathon 2025: Security Category',
+    organizer: 'BPJS Kesehatan',
+    description: 'Finished 2nd in a security-focused hackathon that combined offensive testing, challenge solving, and practical reporting.',
     place: '2nd Place',
-    prize: 'Runner-up Award',
+    prize: 'Runner-up',
     location: 'Indonesia',
     date: '2025',
     category: 'competition',
     featured: true,
-    role: 'Team Member (Team of 3)',
-    keyAchievement: 'Successfully executed an end-to-end security assessment, transitioning from solving rapid-fire CTF challenges to performing deep-dive penetration testing on infrastructure, culminating in a professional report presentation.',
-    image: '/images/awards/bpjs-healthkathon.png' // TODO: Replace with actual image
-  },
-  {
-    id: '3',
-    name: 'University CTF 2025',
-    organizer: 'Hack The Box',
-    description: 'Competed against top university teams from around the globe, achieving a Top 5 international ranking.',
-    place: '4th Place Worldwide',
-    prize: 'International Recognition',
-    location: 'Online (Global)',
-    date: '2025',
-    category: 'competition',
-    featured: true,
-    role: 'Team Member (RISTEK NetSOS Fasilkom UI)',
-    keyAchievement: 'Collaborated with the RISTEK NetSOS team to solve complex cybersecurity challenges, demonstrating advanced problem-solving capabilities in a high-pressure, competitive global environment.',
-    image: '/images/awards/htb-uni-ctf.png' // TODO: Replace with actual image
-  },
-  // ============ CERTIFICATIONS ============
-  {
-    id: '4',
-    name: 'eJPT (eLearnSecurity Junior Penetration Tester)',
-    organizer: 'INE',
-    description: 'Validates practical, hands-on penetration testing skills, including assessment methodologies, host-based attacks, and network security auditing.',
-    place: 'Certified',
-    location: 'Online',
-    date: '2025',
-    category: 'certification',
-    credentialUrl: 'https://certs.ine.com/', // TODO: Replace with actual credential URL
-    image: '/images/certs/ejpt.png' // TODO: Replace with actual image
+    role: 'Team Member',
+    keyAchievement: 'Performed across multi-stage security challenge formats in a healthcare context.',
+    image: '/images/awards/bpjs-healthkathon-2025.png'
   },
   {
     id: '5',
-    name: 'Saviynt Certified IGA Professional',
-    organizer: 'Saviynt',
-    description: 'Demonstrates specialized expertise in Identity Governance and Administration (IGA), focusing on identity lifecycle management and access governance.',
-    place: 'Certified',
-    location: 'Online',
+    name: 'Techomfest 2025',
+    organizer: 'Politeknik Negeri Semarang',
+    description: 'Placed 3rd in a national technology competition, contributing strong security and problem-solving capabilities.',
+    place: '3rd Place',
+    prize: '3rd Winner',
+    location: 'Indonesia',
     date: '2025',
-    category: 'certification',
-    credentialUrl: 'https://saviynt.com/', // TODO: Replace with actual credential URL
-    image: '/images/certs/saviynt.png' // TODO: Replace with actual image
+    category: 'competition',
+    image: '/images/awards/techomfest-2025.png'
   },
   {
     id: '6',
-    name: 'Forescout Accredited Engineer',
-    organizer: 'Forescout',
-    description: 'Certifies technical proficiency in Network Access Control (NAC), device visibility, and automated security control implementation.',
-    place: 'Certified',
-    location: 'Online',
+    name: 'National Cyber Week CTF 2025',
+    organizer: 'Binus University',
+    description: 'Reached the finalist stage in a national CTF event featuring competitive offensive security challenges.',
+    place: 'Finalist',
+    location: 'Indonesia',
     date: '2025',
-    category: 'certification',
-    credentialUrl: 'https://forescout.com/', // TODO: Replace with actual credential URL
-    image: '/images/certs/forescout.png' // TODO: Replace with actual image
+    category: 'competition',
+    image: '/images/awards/national-cyber-week-ctf-2025.png'
   },
   {
     id: '7',
-    name: 'ICCA (INE Certified Cybersecurity Associate)',
+    name: 'Olimpiade Sains Kabupaten Informatika',
+    organizer: 'Puspresnas',
+    description: 'Placed 2nd in a district-level informatics olympiad, demonstrating early competitive problem-solving ability.',
+    place: '2nd Place',
+    location: 'Indonesia',
+    date: '2022',
+    category: 'competition',
+    image: '/images/awards/osk-informatika-2022.png'
+  },
+  {
+    id: '8',
+    name: 'American Mathematics Olympiad',
+    organizer: 'SIMCC and Southern Illinois University',
+    description: 'Received a Silver Award in an international mathematics olympiad.',
+    place: 'Silver Award',
+    location: 'International',
+    date: '2021',
+    category: 'competition',
+    image: '/images/awards/american-mathematics-olympiad-2021.png'
+  },
+  {
+    id: '9',
+    name: 'eJPT',
     organizer: 'INE',
-    description: 'Validates foundational knowledge in cybersecurity concepts, network defense, and protocol analysis.',
+    description: 'Practical junior penetration testing certification covering host, network, and web assessment fundamentals.',
+    place: 'Certified',
+    location: 'Online',
+    date: 'Expires May 2026',
+    category: 'certification',
+    image: '/images/certs/ejpt.png'
+  },
+  {
+    id: '10',
+    name: 'ICCA',
+    organizer: 'INE',
+    description: 'Foundational cybersecurity certification covering essential security concepts, protocols, and defensive principles.',
+    place: 'Certified',
+    location: 'Online',
+    date: 'Expires Jun 2026',
+    category: 'certification',
+    image: '/images/certs/icca.png'
+  },
+  {
+    id: '11',
+    name: 'Forescout Accredited Engineer',
+    organizer: 'Forescout',
+    description: 'Certification in network access control, device visibility, and policy-based endpoint governance.',
     place: 'Certified',
     location: 'Online',
     date: '2025',
     category: 'certification',
-    credentialUrl: 'https://certs.ine.com/', // TODO: Replace with actual credential URL
-    image: '/images/certs/icca.png' // TODO: Replace with actual image
-  }
+    credentialUrl: 'https://www.credly.com/badges/fd98f20a-68c3-42a0-8e32-68b139a91870',
+    image: '/images/certs/forescout.png'
+  },
+  {
+    id: '12',
+    name: 'Saviynt Certified IGA Professional',
+    organizer: 'Saviynt',
+    description: 'Certification in identity governance and administration, covering identity lifecycle and access governance workflows.',
+    place: 'Certified',
+    location: 'Online',
+    date: '2025',
+    category: 'certification',
+    credentialUrl: 'https://certification.saviynt.com/c7d8d7d0-12c5-4701-a823-b642a5c07ee9#acc.fEoyQujr',
+    image: '/images/certs/saviynt.png'
+  },
 ]
 
 const categories = [

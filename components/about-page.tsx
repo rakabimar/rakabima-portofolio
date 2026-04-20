@@ -1,9 +1,10 @@
 "use client"
 
-import { useState } from "react"
+import { useCallback, useEffect, useRef, useState } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import Marquee from './ui/marquee';
 import { GlowingEffect } from "./ui/glowing-effect";
+import HorizontalArrowScroller from "./ui/horizontal-arrow-scroller"
 import {
   User,
   Calendar,
@@ -15,8 +16,6 @@ import {
   Award,
   ChevronRight,
   ExternalLink,
-  ChevronLeft,
-  icons,
   Trophy,
 } from "lucide-react"
 
@@ -24,41 +23,116 @@ interface AboutPageProps {
   onOpenApp?: (appId: string) => void
 }
 
-export default function AboutPage({ onOpenApp }: AboutPageProps) {
-  const [activeTab, setActiveTab] = useState("summary")
-  const [journeyFilter, setJourneyFilter] = useState<"all" | "education" | "work" | "milestone">("all")
+type SectionId = "summary" | "journey" | "projects" | "awards" | "resume" | "contact"
 
-  const tabs = [
-    { id: "summary", label: "Summary", icon: <User className="w-4 h-4" /> },
-    { id: "journey", label: "Journey", icon: <Calendar className="w-4 h-4" /> },
-    { id: "projects", label: "Projects", icon: <Code className="w-4 h-4" /> },
-    { id: "awards", label: "Awards", icon: <Trophy className="w-4 h-4" /> },
-    { id: "resume", label: "Resume", icon: <FileText className="w-4 h-4" /> },
-    { id: "contact", label: "Contact", icon: <Mail className="w-4 h-4" /> },
+const sectionIds: SectionId[] = ["summary", "journey", "projects", "awards", "resume", "contact"]
+
+export default function AboutPage({ onOpenApp }: AboutPageProps) {
+  const [activeSection, setActiveSection] = useState<SectionId>("summary")
+  const [journeyFilter, setJourneyFilter] = useState<"all" | "education" | "work" | "milestone">("all")
+  const scrollContainerRef = useRef<HTMLDivElement>(null)
+  const tabButtonRefs = useRef<Record<SectionId, HTMLButtonElement | null>>({
+    summary: null,
+    journey: null,
+    projects: null,
+    awards: null,
+    resume: null,
+    contact: null,
+  })
+  const sectionRefs = useRef<Record<SectionId, HTMLElement | null>>({
+    summary: null,
+    journey: null,
+    projects: null,
+    awards: null,
+    resume: null,
+    contact: null,
+  })
+
+  const tabs: { id: SectionId; label: string; icon: React.ReactNode }[] = [
+    { id: "summary", label: "Summary", icon: <User className="w-3.5 h-3.5 sm:w-4 sm:h-4" /> },
+    { id: "journey", label: "Journey", icon: <Calendar className="w-3.5 h-3.5 sm:w-4 sm:h-4" /> },
+    { id: "projects", label: "Projects", icon: <Code className="w-3.5 h-3.5 sm:w-4 sm:h-4" /> },
+    { id: "awards", label: "Awards", icon: <Trophy className="w-3.5 h-3.5 sm:w-4 sm:h-4" /> },
+    { id: "resume", label: "Resume", icon: <FileText className="w-3.5 h-3.5 sm:w-4 sm:h-4" /> },
+    { id: "contact", label: "Contact", icon: <Mail className="w-3.5 h-3.5 sm:w-4 sm:h-4" /> },
   ]
+
+  const setSectionRef = useCallback((id: SectionId) => (node: HTMLElement | null) => {
+    sectionRefs.current[id] = node
+  }, [])
+
+  const handleScroll = useCallback(() => {
+    const container = scrollContainerRef.current
+    if (!container) return
+
+    const containerTop = container.getBoundingClientRect().top
+    const activationPoint = containerTop + Math.min(220, container.clientHeight * 0.35)
+    let nextActiveSection: SectionId = "summary"
+
+    sectionIds.forEach((id) => {
+      const section = sectionRefs.current[id]
+      if (!section) return
+
+      if (section.getBoundingClientRect().top <= activationPoint) {
+        nextActiveSection = id
+      }
+    })
+
+    if (container.scrollTop + container.clientHeight >= container.scrollHeight - 8) {
+      nextActiveSection = "contact"
+    }
+
+    setActiveSection((current) => (current === nextActiveSection ? current : nextActiveSection))
+  }, [])
+
+  const scrollToSection = useCallback((id: SectionId) => {
+    const container = scrollContainerRef.current
+    const section = sectionRefs.current[id]
+    if (!container || !section) return
+
+    const containerTop = container.getBoundingClientRect().top
+    const sectionTop = section.getBoundingClientRect().top
+    const targetTop = container.scrollTop + sectionTop - containerTop - 24
+
+    setActiveSection(id)
+    container.scrollTo({
+      top: Math.max(targetTop, 0),
+      behavior: "smooth",
+    })
+  }, [])
+
+  useEffect(() => {
+    handleScroll()
+  }, [handleScroll, journeyFilter])
+
+  useEffect(() => {
+    tabButtonRefs.current[activeSection]?.scrollIntoView({
+      behavior: "smooth",
+      block: "nearest",
+      inline: "nearest",
+    })
+  }, [activeSection])
 
   const skillsets = [
     {
-      title: "Offensive Security & Red Team Operations",
+      title: "Offensive Security & Vulnerability Assessment",
       icon: (
-        <svg width="24" height="24" fill="none" stroke="currentColor" strokeWidth="2" 
-          strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
+        <svg width="24" height="24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
           <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
         </svg>
       ),
     },
     {
-      title: "Back-End Software Development",
+      title: "Back-End API Development",
       icon: (
-        <svg width="24" height="24" fill="none" stroke="currentColor" strokeWidth="2" 
-          strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
+        <svg width="24" height="24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
           <polyline points="16 18 22 12 16 6" />
           <polyline points="8 6 2 12 8 18" />
         </svg>
       ),
     },
     {
-      title: "DevOps, DevSecOps & CI/CD Automation",
+      title: "DevSecOps, CI/CD & Cloud Delivery",
       icon: (
         <svg width="24" height="24" fill="currentColor" stroke="none" viewBox="0 0 24 24">
           <path fillRule="evenodd" clipRule="evenodd" d="M7 7.75c-2.34721 0 -4.25 1.90279 -4.25 4.25 0 2.3472 1.90279 4.25 4.25 4.25 0.59689 0 1.04496 -0.1073 1.40677 -0.2836 0.36246 -0.1766 0.67926 -0.4424 0.98626 -0.8169 0.54003 -0.6587 0.98317 -1.557 1.56717 -2.7405 0.1167 -0.2366 0.2391 -0.4846 0.369 -0.7444 0.1163 -0.2326 0.2297 -0.4633 0.3415 -0.6905 0.5807 -1.1804 1.1166 -2.26995 1.7763 -3.07459 0.4103 -0.50052 0.8896 -0.92222 1.4892 -1.21436C15.5364 6.3927 16.2162 6.25 17 6.25c3.1756 0 5.75 2.57436 5.75 5.75 0 3.1756 -2.5744 5.75 -5.75 5.75 -1.2938 0 -2.4895 -0.4284 -3.4505 -1.1503 -0.3311 -0.2488 -0.3979 -0.719 -0.1492 -1.0502 0.2488 -0.3311 0.719 -0.3979 1.0502 -0.1492 0.7103 0.5337 1.5919 0.8497 2.5495 0.8497 2.3472 0 4.25 -1.9028 4.25 -4.25 0 -2.34721 -1.9028 -4.25 -4.25 -4.25 -0.5969 0 -1.045 0.1073 -1.4068 0.2836 -0.3624 0.17661 -0.6792 0.44241 -0.9862 0.81689 -0.5401 0.65875 -0.9832 1.55701 -1.5672 2.74051 -0.1167 0.2366 -0.2391 0.4846 -0.369 0.7444 -0.1163 0.2326 -0.2297 0.4633 -0.3415 0.6905 -0.5807 1.1804 -1.1166 2.27 -1.7763 3.0746 -0.4103 0.5005 -0.88965 0.9222 -1.48919 1.2143C8.4636 17.6073 7.78382 17.75 7 17.75c-3.17564 0 -5.75 -2.5744 -5.75 -5.75 0 -3.17564 2.57436 -5.75 5.75 -5.75 1.29384 0 2.48982 0.42823 3.451 1.15038 0.3312 0.24881 0.3979 0.71897 0.1491 1.05013 -0.2488 0.33116 -0.71896 0.39792 -1.05012 0.14911C8.83967 8.06595 7.95781 7.75 7 7.75Z" />
@@ -66,7 +140,7 @@ export default function AboutPage({ onOpenApp }: AboutPageProps) {
       ),
     },
     {
-      title: "AI-Powered Application Development",
+      title: "Workflow Automation & Systems Integration",
       icon: (
         <svg width="24" height="24" fill="currentColor" stroke="none" viewBox="0 0 256 256">
           <path d="M248,124a56.11,56.11,0,0,0-32-50.61V72a48,48,0,0,0-88-26.49A48,48,0,0,0,40,72v1.39a56,56,0,0,0,0,101.2V176a48,48,0,0,0,88,26.49A48,48,0,0,0,216,176v-1.41A56.09,56.09,0,0,0,248,124ZM88,208a32,32,0,0,1-31.81-28.56A55.87,55.87,0,0,0,64,180h8a8,8,0,0,0,0-16H64A40,40,0,0,1,50.67,86.27A8,8,0,0,0,56,78.73V72a32,32,0,0,1,64,0v68.26A47.8,47.8,0,0,0,88,128a8,8,0,0,0,0,16,32,32,0,0,1,0,64Zm104-44h-8a8,8,0,0,0,0,16h8a55.87,55.87,0,0,0,7.81-.56A32,32,0,1,1,168,144a8,8,0,0,0,0-16,47.8,47.8,0,0,0-32,12.26V72a32,32,0,0,1,64,0v6.73a8,8,0,0,0,5.33,7.54A40,40,0,0,1,192,164Zm16-52a8,8,0,0,1-8,8h-4a36,36,0,0,1-36-36V80a8,8,0,0,1,16,0v4a20,20,0,0,0,20,20h4A8,8,0,0,1,208,112ZM60,120H56a8,8,0,0,1,0-16h4A20,20,0,0,0,80,84V80a8,8,0,0,1,16,0v4A36,36,0,0,1,60,120Z"/>
@@ -74,20 +148,18 @@ export default function AboutPage({ onOpenApp }: AboutPageProps) {
       ),
     },
     {
-      title: "Software Quality Assurance & Testing",
+      title: "Security Operations & SIEM Engineering",
       icon: (
-        <svg width="24" height="24" fill="none" stroke="currentColor" strokeWidth="2" 
-          strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
+        <svg width="24" height="24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
           <path d="M9 11l3 3L22 4" />
           <path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11" />
         </svg>
       ),
     },
     {
-      title: "Security Operations & Threat Detection",
+      title: "Identity, NAC & Security Engineering",
       icon: (
-        <svg width="24" height="24" fill="none" stroke="currentColor" strokeWidth="2" 
-          strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
+        <svg width="24" height="24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
           <path d="M12 1l3 5.5L21 7l-4 4 1 6-6-3.5L6 17l1-6-4-4 6-.5L12 1z" />
         </svg>
       ),
@@ -153,7 +225,11 @@ export default function AboutPage({ onOpenApp }: AboutPageProps) {
           title: "Bachelor of Computer Science",
           timeline: "2023 - Present",
           description: "Faculty of Computer Science, fully funded by TELADAN Scholarship Tanoto Foundation",
-          achievements: ["GPA: 3.89/4.00", "Courses: Software Security, Ethical Hacking, Computer Networks, Advanced Programming, Database Systems"],
+          achievements: [
+            "GPA: 3.81/4.00",
+            "Courses: Software Security, Ethical Hacking, Operating System, Computer Networks, Advanced Programming, Database Systems",
+            "Additional coursework: Computer Organization and Architecture, Platform-based Development, Data Structures and Algorithms",
+          ],
         },
       ],
     },
@@ -164,10 +240,14 @@ export default function AboutPage({ onOpenApp }: AboutPageProps) {
       period: "Nov 2025 - Present",
       positions: [
         {
-          title: "Cybersecurity Consultant Intern",
+          title: "Cybersecurity Consultant Intern (L2)",
           timeline: "Nov 2025 - Present",
-          description: "Orchestrated deployment of Saviynt IGA and Forescout NAC security solutions",
-          achievements: ["Managed NAC for 20,000+ hosts", "Implemented dynamic compliance rules", "Translated client requirements into security policies"],
+          description: "Built and administered enterprise security platforms spanning SIEM, Identity Governance, and Network Access Control engagements.",
+          achievements: [
+            "Designed and deployed a high-availability Splunk environment handling 40TB+ of log data",
+            "Orchestrated Saviynt IGA and Forescout NAC deployments from business requirements into technical policies",
+            "Managed NAC operations for an enterprise environment with 20,000+ hosts and dynamic compliance rules",
+          ],
         },
       ],
     },
@@ -178,10 +258,14 @@ export default function AboutPage({ onOpenApp }: AboutPageProps) {
       period: "Mar 2025 - Present",
       positions: [
         {
-          title: "Member of Network, Security & OS SIG",
+          title: "Lead of Network, Security, and Operating Systems SIG",
           timeline: "Mar 2025 - Present",
-          description: "Active participant in weekly CTF competitions and security research",
-          achievements: ["Top 10 rankings in 5+ CTF competitions", "Training: Web Exploitation, Binary Exploitation, Forensics", "CVE analysis and threat landscape research"],
+          description: "Led internal capability building and competitive practice across CTF, bug bounty, and penetration testing tracks.",
+          achievements: [
+            "Consistently achieved Top 10 rankings in 5+ weekly CTF competitions",
+            "Developed and delivered internal training on web exploitation, digital forensics, and penetration testing",
+            "Mentored members with technical and strategic guidance for competitions and hands-on security practice",
+          ],
         },
       ],
     },
@@ -189,19 +273,26 @@ export default function AboutPage({ onOpenApp }: AboutPageProps) {
       id: 4,
       organization: "Faculty of Computer Science, Universitas Indonesia",
       type: "work",
-      period: "Jan 2025 - Dec 2025 · 1 yr",
+      period: "Jan 2025 - Dec 2025",
       positions: [
         {
           title: "Teaching Assistant of Data Structures and Algorithms",
-          timeline: "Jul 2025 - Dec 2025 · 6 mos",
-          description: "Designed weekly lab assignments to challenge students' understanding of algorithmic efficiency and implementation",
-          achievements: ["Conducted live coding demonstration tests to evaluate problem-solving skills", "Led comprehensive review sessions for mid-term and final examinations", "Managed 70 students with technical guidance on data structure implementations"],
+          timeline: "Jul 2025 - Dec 2025",
+          description: "Supported core algorithm and data structure instruction through labs, grading, and live coding assessments.",
+          achievements: [
+            "Conducted live coding demonstrations to evaluate real-time problem solving",
+            "Guided students on data structure implementation and algorithmic efficiency",
+            "Contributed to a cumulative teaching load of 110+ students across both assistantships",
+          ],
         },
         {
           title: "Teaching Assistant of Discrete Mathematics 2",
-          timeline: "Jan 2025 - Jun 2025 · 6 mos",
-          description: "Prepared and evaluated quizzes to assess students' understanding of course material",
-          achievements: ["Clarified complex topics through review sessions and individual support", "Assisted lecturer during lectures and promoted active student engagement"],
+          timeline: "Jan 2025 - Jun 2025",
+          description: "Prepared quizzes, grading support, and review materials for theoretical computer science topics.",
+          achievements: [
+            "Clarified complex topics through review sessions and targeted student support",
+            "Assisted lecture delivery and reinforced mastery of Discrete Mathematics 2 concepts",
+          ],
         },
       ],
     },
@@ -214,8 +305,12 @@ export default function AboutPage({ onOpenApp }: AboutPageProps) {
         {
           title: "Project Manager",
           timeline: "Feb 2024 - Dec 2024",
-          description: "Led team of 30+ members on SDG-aligned community engagement initiatives",
-          achievements: ["Pitched and executed sustainability projects", "Cross-division collaboration", "Successful community engagement outcomes"],
+          description: "Led a team of 30+ members on SDG-aligned community engagement initiatives.",
+          achievements: [
+            "Scoped and pitched sustainability-focused project ideas",
+            "Coordinated execution across divisions and stakeholders",
+            "Managed budget allocation to support successful program delivery",
+          ],
         },
       ],
     },
@@ -233,18 +328,60 @@ export default function AboutPage({ onOpenApp }: AboutPageProps) {
         },
       ],
     },
+    {
+      id: 7,
+      organization: "Pentest TNI 2026",
+      type: "milestone",
+      period: "2026",
+      positions: [
+        {
+          title: "1st Winner",
+          timeline: "2026",
+          description: "Won the national pentesting competition organized by Dislitbang TNI AD.",
+          achievements: ["National-level cybersecurity competition victory", "Validated offensive security and reporting skills under competitive pressure"],
+        },
+      ],
+    },
+    {
+      id: 8,
+      organization: "University CTF 2025",
+      type: "milestone",
+      period: "2025",
+      positions: [
+        {
+          title: "4th Winner Worldwide",
+          timeline: "2025",
+          description: "Placed 4th globally in Hack The Box University CTF 2025 with the RISTEK Fasilkom UI team.",
+          achievements: ["International top-5 finish", "Solved advanced offensive security challenges with a university team"],
+        },
+      ],
+    },
+    {
+      id: 9,
+      organization: "Bug Bounty 2025",
+      type: "milestone",
+      period: "2025",
+      positions: [
+        {
+          title: "1st Winner",
+          timeline: "2025",
+          description: "Won the national bug bounty competition held by Pusdatin Kemendikdasmen.",
+          achievements: ["Recognized for high-impact web vulnerability discovery", "Combined technical findings with final presentation delivery"],
+        },
+      ],
+    },
   ]
 
   const getJourneyIcon = (type: string) => {
     switch (type) {
       case "work":
-        return <Briefcase className="w-5 h-5" />
+        return <Briefcase className="w-4 h-4 sm:w-5 sm:h-5" />
       case "education":
-        return <GraduationCap className="w-5 h-5" />
+        return <GraduationCap className="w-4 h-4 sm:w-5 sm:h-5" />
       case "milestone":
-        return <Award className="w-5 h-5" />
+        return <Award className="w-4 h-4 sm:w-5 sm:h-5" />
       default:
-        return <Calendar className="w-5 h-5" />
+        return <Calendar className="w-4 h-4 sm:w-5 sm:h-5" />
     }
   }
 
@@ -256,12 +393,12 @@ export default function AboutPage({ onOpenApp }: AboutPageProps) {
     icon: React.ReactNode
   }) => {
     return (
-      <div className="relative w-28 h-28 sm:w-36 sm:h-36 shrink-0 cursor-pointer overflow-hidden rounded-xl sm:rounded-2xl border border-aurora-orange/30 p-3 sm:p-5 bg-gray-800 hover:bg-gray-700/50 transition-all duration-200">
+      <div className="relative w-24 h-24 sm:w-36 sm:h-36 shrink-0 cursor-pointer overflow-hidden rounded-lg sm:rounded-2xl border border-aurora-orange/30 p-2.5 sm:p-5 bg-gray-800 hover:bg-gray-700/50 transition-all duration-200">
           <div className="flex flex-col items-center justify-center h-full">
             <div className="text-aurora-orange mb-1 sm:mb-2 flex items-center justify-center [&>svg]:w-5 [&>svg]:h-5 sm:[&>svg]:w-6 sm:[&>svg]:h-6">
               {icon}
             </div>
-            <h3 className="text-[10px] sm:text-xs font-semibold text-aurora-white text-center leading-tight">
+            <h3 className="text-[9px] sm:text-xs font-semibold text-aurora-white text-center leading-tight">
               {title}
             </h3>
           </div>
@@ -273,15 +410,15 @@ export default function AboutPage({ onOpenApp }: AboutPageProps) {
   const SkillsCarousel = () => {
     return (
       <div className="relative w-full flex items-center justify-center overflow-hidden rounded-lg">
-        <Marquee pauseOnHover className="[--duration:25s] [--gap:1rem]">
+        <Marquee pauseOnHover className="[--duration:25s] [--gap:0.75rem] sm:[--gap:1rem]">
           {skillsets.map((skill) => (
             <SkillCard key={skill.title} {...skill} />
           ))}
         </Marquee>
         
         {/* Enhanced gradient masks for seamless fade effect */}
-        <div className="pointer-events-none absolute inset-y-0 left-0 w-20 bg-gradient-to-r from-gray-900 via-gray-900/90 to-transparent z-10"></div>
-        <div className="pointer-events-none absolute inset-y-0 right-0 w-20 bg-gradient-to-l from-gray-900 via-gray-900/90 to-transparent z-10"></div>
+        <div className="pointer-events-none absolute inset-y-0 left-0 w-10 sm:w-20 bg-gradient-to-r from-gray-900 via-gray-900/90 to-transparent z-10"></div>
+        <div className="pointer-events-none absolute inset-y-0 right-0 w-10 sm:w-20 bg-gradient-to-l from-gray-900 via-gray-900/90 to-transparent z-10"></div>
       </div>
     );
   };
@@ -289,14 +426,14 @@ export default function AboutPage({ onOpenApp }: AboutPageProps) {
   // Tech Stack Tool Card Component
   const TechToolCard = ({ name, logo }: { name: string; logo: React.ReactNode }) => {
     return (
-      <div className="group/card relative bg-gray-700/80 rounded-lg sm:rounded-xl flex items-center justify-center hover:bg-aurora-coral/20 transition-all duration-300 cursor-pointer border border-gray-600 hover:border-aurora-coral/50 w-14 h-14 sm:w-20 sm:h-20 shrink-0 overflow-hidden">
+      <div className="group/card relative bg-gray-700/80 rounded-lg sm:rounded-xl flex items-center justify-center hover:bg-aurora-coral/20 transition-all duration-300 cursor-pointer border border-gray-600 hover:border-aurora-coral/50 w-12 h-12 sm:w-20 sm:h-20 shrink-0 overflow-hidden">
         {/* Logo - fades on hover */}
-        <div className="w-7 h-7 sm:w-9 sm:h-9 transition-all duration-300 group-hover/card:opacity-20 group-hover/card:scale-110 flex items-center justify-center text-gray-200 [&>svg]:w-full [&>svg]:h-full [&>svg]:fill-current">
+        <div className="w-6 h-6 sm:w-9 sm:h-9 transition-all duration-300 group-hover/card:opacity-20 group-hover/card:scale-110 flex items-center justify-center text-gray-200 [&>svg]:w-full [&>svg]:h-full [&>svg]:fill-current">
           {logo}
         </div>
         {/* Name overlay - appears on hover */}
         <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover/card:opacity-100 transition-opacity duration-300">
-          <span className="text-[9px] sm:text-[11px] text-aurora-white text-center font-semibold leading-tight px-1">
+          <span className="text-[8px] sm:text-[11px] text-aurora-white text-center font-semibold leading-tight px-1">
             {name}
           </span>
         </div>
@@ -310,106 +447,115 @@ export default function AboutPage({ onOpenApp }: AboutPageProps) {
   // Tech Stack Marquee Component with infinite scroll
   const TechStackMarquee = () => {
     return (
-      <div className="relative w-full flex flex-col gap-3 overflow-hidden rounded-lg">
+      <div className="relative w-full flex flex-col gap-2 sm:gap-3 overflow-hidden rounded-lg">
         {/* First row - scrolls left */}
-        <Marquee pauseOnHover className="[--duration:30s] [--gap:0.75rem]">
+        <Marquee pauseOnHover className="[--duration:30s] [--gap:0.625rem] sm:[--gap:0.75rem]">
           {allTechTools.slice(0, Math.ceil(allTechTools.length / 2)).map((tech) => (
             <TechToolCard key={tech.name} name={tech.name} logo={tech.logo} />
           ))}
         </Marquee>
         
         {/* Second row - scrolls right (reverse) */}
-        <Marquee pauseOnHover reverse className="[--duration:35s] [--gap:0.75rem]">
+        <Marquee pauseOnHover reverse className="[--duration:35s] [--gap:0.625rem] sm:[--gap:0.75rem]">
           {allTechTools.slice(Math.ceil(allTechTools.length / 2)).map((tech) => (
             <TechToolCard key={tech.name} name={tech.name} logo={tech.logo} />
           ))}
         </Marquee>
         
         {/* Enhanced gradient masks for seamless fade effect */}
-        <div className="pointer-events-none absolute inset-y-0 left-0 w-16 bg-gradient-to-r from-gray-900 via-gray-900/90 to-transparent z-10"></div>
-        <div className="pointer-events-none absolute inset-y-0 right-0 w-16 bg-gradient-to-l from-gray-900 via-gray-900/90 to-transparent z-10"></div>
+        <div className="pointer-events-none absolute inset-y-0 left-0 w-8 sm:w-16 bg-gradient-to-r from-gray-900 via-gray-900/90 to-transparent z-10"></div>
+        <div className="pointer-events-none absolute inset-y-0 right-0 w-8 sm:w-16 bg-gradient-to-l from-gray-900 via-gray-900/90 to-transparent z-10"></div>
       </div>
     );
   };
 
   return (
-    <div className="h-full bg-gradient-to-br from-black via-gray-950 to-gray-900 text-aurora-white flex flex-col">
+    <div className="h-full min-h-0 bg-gradient-to-br from-black via-gray-950 to-gray-900 text-aurora-white flex flex-col">
       {/* Header - Enhanced Contrast */}
-      <div className="bg-gradient-to-r from-black/90 via-gray-950/90 to-black/90 backdrop-blur-sm border-b border-aurora-orange/30 p-3 sm:p-6 flex-shrink-0">
-        <div className="flex items-center space-x-3 sm:space-x-4">
-          <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-aurora-orange to-aurora-coral rounded-xl flex items-center justify-center ring-2 ring-aurora-orange/50 flex-shrink-0">
+      <div className="bg-gradient-to-r from-black/90 via-gray-950/90 to-black/90 backdrop-blur-sm border-b border-aurora-orange/30 p-2.5 sm:p-6 flex-shrink-0">
+        <div className="flex items-center space-x-2 sm:space-x-4">
+          <div className="w-8 h-8 sm:w-12 sm:h-12 bg-gradient-to-br from-aurora-orange to-aurora-coral rounded-lg sm:rounded-xl flex items-center justify-center ring-2 ring-aurora-orange/50 flex-shrink-0">
             <img
               src="images/profile/profile_picture.jpg"
               alt="Profile Picture"
-              className="w-full h-full object-cover rounded-xl"
+              className="w-full h-full object-cover rounded-lg sm:rounded-xl"
             />
           </div>
           <div className="min-w-0">
-            <h1 className="text-base sm:text-xl font-bold text-aurora-white truncate">Rakabima Ghaniendra Rusdianto</h1>
-            <p className="text-aurora-orange text-xs sm:text-sm font-medium">CS @ UI</p>
+            <h1 className="text-sm sm:text-xl font-bold text-aurora-white truncate">Rakabima Ghaniendra Rusdianto</h1>
+            <p className="text-aurora-orange text-[11px] sm:text-sm font-medium">CS @ UI</p>
           </div>
         </div>
       </div>
 
-      {/* Tab Navigation - Enhanced Contrast */}
-      <div className="bg-gradient-to-r from-black/80 via-gray-900/80 to-black/80 backdrop-blur-sm border-b border-aurora-orange/20 px-2 sm:px-6 py-2 sm:py-4 flex-shrink-0">
-        <div className="flex space-x-1 overflow-x-auto scrollbar-none pb-1">
+      {/* Section Navigation - Enhanced Contrast */}
+      <div className="bg-gradient-to-r from-black/80 via-gray-900/80 to-black/80 backdrop-blur-sm border-b border-aurora-orange/20 px-2 sm:px-6 py-1.5 sm:py-4 flex-shrink-0">
+        <HorizontalArrowScroller
+          ariaLabel="About sections"
+          contentClassName="flex gap-1 pb-1 px-9 md:px-0"
+        >
           {tabs.map((tab) => (
             <button
               key={tab.id}
-              onClick={() => setActiveTab(tab.id)}
-              className={`flex items-center space-x-1 sm:space-x-2 px-2 sm:px-4 py-1.5 sm:py-2 rounded-lg font-medium transition-all duration-200 whitespace-nowrap text-xs sm:text-sm flex-shrink-0 ${
-                activeTab === tab.id
+              ref={(node) => {
+                tabButtonRefs.current[tab.id] = node
+              }}
+              onClick={() => scrollToSection(tab.id)}
+              aria-current={activeSection === tab.id ? "true" : undefined}
+              className={`flex items-center space-x-1 sm:space-x-2 px-2.5 sm:px-4 py-1.5 sm:py-2 rounded-lg font-medium transition-all duration-200 whitespace-nowrap text-[11px] sm:text-sm flex-shrink-0 ${
+                activeSection === tab.id
                   ? "bg-gradient-to-r from-aurora-orange to-aurora-coral text-black border border-aurora-orange/50 shadow-lg"
                   : "text-gray-300 hover:bg-gray-800/50 hover:text-aurora-white border border-transparent"
               }`}
             >
               {tab.icon}
-              <span className="hidden sm:inline">{tab.label}</span>
+              <span>{tab.label}</span>
             </button>
           ))}
-        </div>
+        </HorizontalArrowScroller>
       </div>
 
       {/* Content */}
-      <div className="flex-1 overflow-y-auto overscroll-contain min-h-0" style={{ WebkitOverflowScrolling: 'touch' as const }}>
-        <AnimatePresence mode="wait">
-          <motion.div
-            key={activeTab}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-            transition={{ duration: 0.3 }}
-            className="p-4 sm:p-8 pb-8"
-          >
-            {activeTab === "summary" && (
-            <div className="max-w-6xl mx-auto space-y-12">
+      <div
+        ref={scrollContainerRef}
+        onScroll={handleScroll}
+        className="flex-1 overflow-y-auto overscroll-contain min-h-0 scroll-smooth"
+        style={{ WebkitOverflowScrolling: 'touch' as const }}
+      >
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.3 }}
+          className="p-3 sm:p-8 pb-8 sm:pb-10 space-y-10 sm:space-y-16"
+        >
+          <section ref={setSectionRef("summary")} id="about-summary" className="scroll-mt-6">
+            <div className="max-w-6xl mx-auto space-y-8 sm:space-y-12">
               {/* Hero Section */}
               <motion.div
                 initial={{ opacity: 0, y: 30 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.1 }}
-                className="text-center space-y-6"
+                className="text-center space-y-4 sm:space-y-6"
               >
                 {/* Status Indicator */}
                 <motion.div
                   initial={{ opacity: 0, scale: 0.9 }}
                   animate={{ opacity: 1, scale: 1 }}
                   transition={{ delay: 0.05 }}
-                  className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gray-800/60 border border-aurora-orange/30"
+                  className="inline-flex items-center gap-2 px-3 sm:px-4 py-1.5 sm:py-2 rounded-full bg-gray-800/60 border border-aurora-orange/30"
                 >
-                  <span className="relative flex h-2.5 w-2.5">
+                  <span className="relative flex h-2 w-2 sm:h-2.5 sm:w-2.5">
                     <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
-                    <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-green-500"></span>
+                    <span className="relative inline-flex rounded-full h-2 w-2 sm:h-2.5 sm:w-2.5 bg-green-500"></span>
                   </span>
-                  <span className="text-sm text-gray-300">Available for opportunities</span>
+                  <span className="text-xs sm:text-sm text-gray-300">Open to cybersecurity opportunities</span>
                 </motion.div>
 
-                <h1 className="text-2xl sm:text-4xl md:text-6xl font-serif leading-tight bg-gradient-to-r from-aurora-orange via-aurora-coral to-aurora-white bg-[length:200%_auto] animate-[gradient_3s_linear_infinite] bg-clip-text text-transparent">
+                <h1 className="text-3xl sm:text-4xl md:text-6xl font-serif leading-tight bg-gradient-to-r from-aurora-orange via-aurora-coral to-aurora-white bg-[length:200%_auto] animate-[gradient_3s_linear_infinite] bg-clip-text text-transparent">
                   Hacking systems. Building solutions.
                 </h1>
-                <p className="text-base sm:text-xl text-gray-300 max-w-4xl mx-auto leading-relaxed">
-                  Cybersecurity specialist crafting secure software & AI-powered automation.
+                <p className="text-sm sm:text-xl text-gray-300 max-w-4xl mx-auto leading-relaxed">
+                  Bridging the gap between offensive vulnerability research and secure systems engineering. I specialize in uncovering critical flaws to architect robust, resilient, and automated digital infrastructures.
                 </p>
 
                 {/* Quick Stats */}
@@ -417,13 +563,13 @@ export default function AboutPage({ onOpenApp }: AboutPageProps) {
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.2 }}
-                  className="grid grid-cols-2 sm:flex sm:flex-wrap justify-center gap-4 sm:gap-6 pt-4"
+                  className="grid grid-cols-2 sm:flex sm:flex-wrap justify-center gap-3 sm:gap-6 pt-2 sm:pt-4"
                 >
                   {[
-                    { value: "3+", label: "Years Coding" },
-                    { value: "15+", label: "Projects Built" },
-                    { value: "20+", label: "CTFs Competed" },
-                    { value: "Top 15%", label: "PicoCTF Rank" },
+                    { value: "3.81/4.00", label: "GPA" },
+                    { value: "1st Place", label: "Pentesting & Bug Bounty" },
+                    { value: "8+", label: "Awards Won" },
+                    { value: "20+", label: "Bugs Reported" }
                   ].map((stat, index) => (
                     <motion.div
                       key={stat.label}
@@ -432,8 +578,8 @@ export default function AboutPage({ onOpenApp }: AboutPageProps) {
                       transition={{ delay: 0.3 + index * 0.1 }}
                       className="text-center px-2 sm:px-4"
                     >
-                      <div className="text-xl sm:text-2xl md:text-3xl font-bold text-aurora-orange">{stat.value}</div>
-                      <div className="text-xs sm:text-sm text-gray-400">{stat.label}</div>
+                      <div className="text-lg sm:text-2xl md:text-3xl font-bold text-aurora-orange">{stat.value}</div>
+                      <div className="text-[11px] sm:text-sm text-gray-400">{stat.label}</div>
                     </motion.div>
                   ))}
                 </motion.div>
@@ -446,15 +592,15 @@ export default function AboutPage({ onOpenApp }: AboutPageProps) {
                   className="flex flex-col sm:flex-row justify-center gap-3 sm:gap-4 pt-2"
                 >
                   <button
-                    onClick={() => setActiveTab("projects")}
-                    className="px-4 sm:px-6 py-2.5 sm:py-3 bg-gradient-to-r from-aurora-orange to-aurora-coral text-black font-semibold rounded-xl hover:shadow-lg hover:shadow-aurora-orange/25 transition-all duration-300 flex items-center justify-center gap-2 text-sm sm:text-base"
+                    onClick={() => scrollToSection("projects")}
+                    className="min-h-11 px-4 sm:px-6 py-2 sm:py-3 bg-gradient-to-r from-aurora-orange to-aurora-coral text-black font-semibold rounded-lg sm:rounded-xl hover:shadow-lg hover:shadow-aurora-orange/25 transition-all duration-300 flex items-center justify-center gap-2 text-sm sm:text-base"
                   >
                     <Code className="w-4 h-4" />
                     View Projects
                   </button>
                   <button
-                    onClick={() => setActiveTab("contact")}
-                    className="px-4 sm:px-6 py-2.5 sm:py-3 bg-gray-800 text-aurora-white font-semibold rounded-xl border border-aurora-orange/30 hover:border-aurora-orange/60 hover:bg-gray-700/50 transition-all duration-300 flex items-center justify-center gap-2 text-sm sm:text-base"
+                    onClick={() => scrollToSection("contact")}
+                    className="min-h-11 px-4 sm:px-6 py-2 sm:py-3 bg-gray-800 text-aurora-white font-semibold rounded-lg sm:rounded-xl border border-aurora-orange/30 hover:border-aurora-orange/60 hover:bg-gray-700/50 transition-all duration-300 flex items-center justify-center gap-2 text-sm sm:text-base"
                   >
                     <Mail className="w-4 h-4" />
                     Get in Touch
@@ -473,9 +619,9 @@ export default function AboutPage({ onOpenApp }: AboutPageProps) {
                     duration: 0.8,
                     ease: [0.4, 0, 0.2, 1]
                   }}
-                  className="bg-gray-900 backdrop-blur-sm rounded-2xl p-1 border border-transparent shadow-2xl"
+                  className="bg-gray-900 backdrop-blur-sm rounded-xl sm:rounded-2xl p-1 border border-transparent shadow-2xl"
                 >
-                  <div className="relative h-full rounded-2xl p-2">
+                  <div className="relative h-full rounded-xl sm:rounded-2xl p-1.5 sm:p-2">
                     <GlowingEffect
                       glow={true}
                       disabled={false}
@@ -483,14 +629,14 @@ export default function AboutPage({ onOpenApp }: AboutPageProps) {
                       inactiveZone={0.01}
                       spread={40}
                     />
-                    <div className="relative bg-gray-900 rounded-xl p-8 h-full overflow-hidden">
+                    <div className="relative bg-gray-900 rounded-lg sm:rounded-xl p-4 sm:p-8 h-full overflow-hidden">
                       <motion.div 
-                        className="flex items-center space-x-3 mb-6"
+                        className="flex items-center space-x-3 mb-4 sm:mb-6"
                         initial={{ opacity: 0, y: -20 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: 0.6, duration: 0.6 }}
                       >
-                        <div className="flex items-center space-x-2 px-4 py-2 bg-gray-800/60 rounded-xl border border-aurora-orange/40">
+                        <div className="flex items-center space-x-2 px-3 sm:px-4 py-1.5 sm:py-2 bg-gray-800/60 rounded-lg sm:rounded-xl border border-aurora-orange/40">
                           <motion.svg 
                             xmlns="http://www.w3.org/2000/svg" 
                             width="18" 
@@ -505,7 +651,7 @@ export default function AboutPage({ onOpenApp }: AboutPageProps) {
                             <path d="M215.79,118.17a8,8,0,0,0-5-5.66L153.18,90.9l14.66-73.33a8,8,0,0,0-13.69-7l-112,120a8,8,0,0,0,3,13l57.63,21.61L88.16,238.43a8,8,0,0,0,13.69,7l112-120A8,8,0,0,0,215.79,118.17ZM109.37,214l10.47-52.38a8,8,0,0,0-5-9.06L62,132.71l84.62-90.66L136.16,94.43a8,8,0,0,0,5,9.06l52.8,19.8Z"></path>
                           </motion.svg>
                           <motion.span 
-                            className="text-base font-mono font-medium text-aurora-coral"
+                            className="text-sm sm:text-base font-mono font-medium text-aurora-coral"
                             initial={{ opacity: 0, x: -10 }}
                             animate={{ opacity: 1, x: 0 }}
                             transition={{ delay: 1, duration: 0.4 }}
@@ -516,7 +662,7 @@ export default function AboutPage({ onOpenApp }: AboutPageProps) {
                       </motion.div>
 
                       <motion.div 
-                        className="relative h-48 overflow-hidden flex items-center"
+                        className="relative h-36 sm:h-48 overflow-hidden flex items-center"
                         initial={{ opacity: 0, scale: 0.95 }}
                         animate={{ opacity: 1, scale: 1 }}
                         transition={{ delay: 0.9, duration: 0.7 }}
@@ -525,17 +671,17 @@ export default function AboutPage({ onOpenApp }: AboutPageProps) {
                       </motion.div>
 
                       <motion.div 
-                        className="mt-6 pt-4 border-t border-aurora-orange/30"
+                        className="mt-4 sm:mt-6 pt-4 border-t border-aurora-orange/30"
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: 1.2, duration: 0.6 }}
                       >
-                        <p className="text-gray-300">
+                        <p className="text-sm sm:text-base text-gray-300">
                           Specializing in <span className="text-aurora-orange font-semibold">Offensive Security</span>,{" "}
-                          <span className="text-aurora-coral font-semibold">Secure Development</span>, and{" "}
-                          <span className="text-aurora-coral font-semibold">AI Integration</span>.
+                          <span className="text-aurora-coral font-semibold">Secure Backend Engineering</span>, and{" "}
+                          <span className="text-aurora-coral font-semibold">Security Operations</span>.
                           <br />
-                          From <span className="text-aurora-orange font-semibold">pentesting</span> to <span className="text-aurora-coral font-semibold">automated pipelines</span>.
+                          From <span className="text-aurora-orange font-semibold">pentesting</span> to <span className="text-aurora-coral font-semibold">microservices and automated workflows</span>.
                         </p>
                       </motion.div>
                     </div>
@@ -551,9 +697,9 @@ export default function AboutPage({ onOpenApp }: AboutPageProps) {
                     duration: 0.8,
                     ease: [0.4, 0, 0.2, 1]
                   }}
-                  className="bg-gray-900 backdrop-blur-sm rounded-2xl p-1 border border-transparent shadow-2xl"
+                  className="bg-gray-900 backdrop-blur-sm rounded-xl sm:rounded-2xl p-1 border border-transparent shadow-2xl"
                 >
-                  <div className="relative h-full rounded-2xl p-2">
+                  <div className="relative h-full rounded-xl sm:rounded-2xl p-1.5 sm:p-2">
                     <GlowingEffect
                       glow={true}
                       disabled={false}
@@ -561,14 +707,14 @@ export default function AboutPage({ onOpenApp }: AboutPageProps) {
                       inactiveZone={0.01}
                       spread={40}
                     />
-                    <div className="relative bg-gray-900 rounded-xl p-8 h-full overflow-hidden">
+                    <div className="relative bg-gray-900 rounded-lg sm:rounded-xl p-4 sm:p-8 h-full overflow-hidden">
                       <motion.div 
-                        className="flex items-center space-x-3 mb-6"
+                        className="flex items-center space-x-3 mb-4 sm:mb-6"
                         initial={{ opacity: 0, y: -20 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: 0.8, duration: 0.6 }}
                       >
-                        <div className="flex items-center space-x-2 px-4 py-2 bg-gray-800/60 rounded-xl border border-aurora-coral/40">
+                        <div className="flex items-center space-x-2 px-3 sm:px-4 py-1.5 sm:py-2 bg-gray-800/60 rounded-lg sm:rounded-xl border border-aurora-coral/40">
                           <motion.svg 
                             xmlns="http://www.w3.org/2000/svg" 
                             width="18" 
@@ -583,7 +729,7 @@ export default function AboutPage({ onOpenApp }: AboutPageProps) {
                             <path d="M128,80a48,48,0,1,0,48,48A48.05,48.05,0,0,0,128,80Zm0,80a32,32,0,1,1,32-32A32,32,0,0,1,128,160Zm109.94-52.79a8,8,0,0,0-3.89-5.4l-29.83-17-.12-33.62a8,8,0,0,0-2.83-6.08,111.91,111.91,0,0,0-36.72-20.67,8,8,0,0,0-6.46.59L128,41.85,97.88,25a8,8,0,0,0-6.47-.6A112.1,112.1,0,0,0,54.73,45.15a8,8,0,0,0-2.83,6.07l-.15,33.65-29.83,17a8,8,0,0,0-3.89,5.4,106.47,106.47,0,0,0,0,41.56,8,8,0,0,0,3.89,5.4l29.83,17,.12,33.62a8,8,0,0,0,2.83,6.08,111.91,111.91,0,0,0,36.72,20.67,8,8,0,0,0,6.46-.59L128,214.15,158.12,231a7.91,7.91,0,0,0,3.9,1,8.09,8.09,0,0,0,2.57-.42,112.1,112.1,0,0,0,36.68-20.73,8,8,0,0,0,2.83-6.07l.15-33.65,29.83-17a8,8,0,0,0,3.89-5.4A106.47,106.47,0,0,0,237.94,107.21Zm-15,34.91-28.57,16.25a8,8,0,0,0-3,3c-.58,1-1.19,2.06-1.81,3.06a7.94,7.94,0,0,0-1.22,4.21l-.15,32.25a95.89,95.89,0,0,1-25.37,14.3L134,199.13a8,8,0,0,0-3.91-1h-.19c-1.21,0-2.43,0-3.64,0a8.08,8.08,0,0,0-4.1,1l-28.84,16.1A96,96,0,0,1,67.88,201l-.11-32.2a8,8,0,0,0-1.22-4.22c-.62-1-1.23-2-1.8-3.06a8.09,8.09,0,0,0-3-3.06l-28.6-16.29a90.49,90.49,0,0,1,0-28.26L61.67,97.63a8,8,0,0,0,3-3c.58-1,1.19-2.06,1.81-3.06a7.94,7.94,0,0,0,1.22-4.21l.15-32.25a95.89,95.89,0,0,1,25.37-14.3L122,56.87a8,8,0,0,0,4.1,1c1.21,0,2.43,0,3.64,0a8.08,8.08,0,0,0,4.1-1l28.84-16.1A96,96,0,0,1,188.12,55l.11,32.2a8,8,0,0,0,1.22,4.22c.62,1,1.23,2,1.8,3.06a8.09,8.09,0,0,0,3,3.06l28.6,16.29A90.49,90.49,0,0,1,222.9,142.12Z"></path>
                           </motion.svg>
                           <motion.span 
-                            className="text-base font-mono font-medium text-aurora-coral"
+                            className="text-sm sm:text-base font-mono font-medium text-aurora-coral"
                             initial={{ opacity: 0, x: -10 }}
                             animate={{ opacity: 1, x: 0 }}
                             transition={{ delay: 1.2, duration: 0.4 }}
@@ -594,7 +740,7 @@ export default function AboutPage({ onOpenApp }: AboutPageProps) {
                       </motion.div>
 
                       <motion.div 
-                        className="relative h-48 overflow-hidden flex items-center"
+                        className="relative h-36 sm:h-48 overflow-hidden flex items-center"
                         initial={{ opacity: 0, scale: 0.95 }}
                         animate={{ opacity: 1, scale: 1 }}
                         transition={{ delay: 1.1, duration: 0.7 }}
@@ -603,17 +749,17 @@ export default function AboutPage({ onOpenApp }: AboutPageProps) {
                       </motion.div>
 
                       <motion.div 
-                        className="mt-6 pt-4 border-t border-aurora-coral/30"
+                        className="mt-4 sm:mt-6 pt-4 border-t border-aurora-coral/30"
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: 1.4, duration: 0.6 }}
                       >
-                        <p className="text-gray-300">
-                          Leveraging <span className="text-aurora-coral font-semibold">security tools</span>,{" "}
+                        <p className="text-sm sm:text-base text-gray-300">
+                          Leveraging <span className="text-aurora-coral font-semibold">security tooling</span>,{" "}
                           <span className="text-aurora-orange font-semibold">cloud infrastructure</span>, and{" "}
-                          <span className="text-aurora-coral font-semibold">AI frameworks</span>
+                          <span className="text-aurora-coral font-semibold">backend frameworks</span>
                           <br />
-                          to build <span className="text-aurora-orange font-semibold">resilient</span> and <span className="text-aurora-coral font-semibold">intelligent</span> systems.
+                          to build <span className="text-aurora-orange font-semibold">resilient systems</span> and <span className="text-aurora-coral font-semibold">practical automations</span>.
                         </p>
                       </motion.div>
                     </div>
@@ -621,33 +767,33 @@ export default function AboutPage({ onOpenApp }: AboutPageProps) {
                 </motion.div>
               </div>
             </div>
-          )}
+            </section>
 
-            {activeTab === "journey" && (
+          <section ref={setSectionRef("journey")} id="about-journey" className="scroll-mt-6">
               <div className="max-w-4xl mx-auto">
                 {/* Header with Filter */}
                 <motion.div
                   initial={{ opacity: 0, y: -20 }}
                   animate={{ opacity: 1, y: 0 }}
-                  className="text-center mb-10"
+                  className="text-center mb-7 sm:mb-10"
                 >
-                  <h2 className="text-3xl font-bold mb-2 bg-gradient-to-r from-aurora-orange via-aurora-coral to-aurora-white bg-clip-text text-transparent">
+                  <h2 className="text-2xl sm:text-3xl font-bold mb-2 bg-gradient-to-r from-aurora-orange via-aurora-coral to-aurora-white bg-clip-text text-transparent">
                     My Professional Journey
                   </h2>
-                  <p className="text-gray-400 mb-6">The path that shaped who I am today</p>
+                  <p className="text-sm sm:text-base text-gray-400 mb-4 sm:mb-6">The path that shaped who I am today</p>
                   
                   {/* Journey Type Filter */}
                   <div className="flex justify-center gap-2 flex-wrap">
                     {[
-                      { type: "all" as const, label: "All", icon: <Calendar className="w-3.5 h-3.5" /> },
-                      { type: "education" as const, label: "Education", icon: <GraduationCap className="w-3.5 h-3.5" /> },
-                      { type: "work" as const, label: "Work", icon: <Briefcase className="w-3.5 h-3.5" /> },
-                      { type: "milestone" as const, label: "Milestones", icon: <Award className="w-3.5 h-3.5" /> },
+                      { type: "all" as const, label: "All", icon: <Calendar className="w-3 h-3 sm:w-3.5 sm:h-3.5" /> },
+                      { type: "education" as const, label: "Education", icon: <GraduationCap className="w-3 h-3 sm:w-3.5 sm:h-3.5" /> },
+                      { type: "work" as const, label: "Work", icon: <Briefcase className="w-3 h-3 sm:w-3.5 sm:h-3.5" /> },
+                      { type: "milestone" as const, label: "Milestones", icon: <Award className="w-3 h-3 sm:w-3.5 sm:h-3.5" /> },
                     ].map((filter) => (
                       <button
                         key={filter.type}
                         onClick={() => setJourneyFilter(filter.type)}
-                        className={`group flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-medium transition-all duration-300 border ${
+                        className={`group flex items-center gap-1.5 px-3 sm:px-4 py-1.5 sm:py-2 rounded-full text-xs sm:text-sm font-medium transition-all duration-300 border ${
                           journeyFilter === filter.type
                             ? "bg-gradient-to-r from-aurora-orange to-aurora-coral text-black border-aurora-orange/50 shadow-lg shadow-aurora-orange/20"
                             : "bg-gray-800/60 text-gray-300 border-gray-700 hover:border-aurora-orange/50 hover:text-aurora-orange hover:bg-gray-800"
@@ -663,10 +809,10 @@ export default function AboutPage({ onOpenApp }: AboutPageProps) {
                 {/* Timeline */}
                 <div className="relative">
                   {/* Vertical Timeline Line */}
-                  <div className="absolute left-6 md:left-8 top-0 bottom-0 w-0.5 bg-gradient-to-b from-aurora-orange via-aurora-coral to-aurora-orange/20"></div>
+                  <div className="absolute left-4 sm:left-6 md:left-8 top-0 bottom-0 w-0.5 bg-gradient-to-b from-aurora-orange via-aurora-coral to-aurora-orange/20"></div>
 
                   <AnimatePresence mode="popLayout">
-                  <div className="space-y-8">
+                  <div className="space-y-6 sm:space-y-8">
                     {journey
                       .filter(item => journeyFilter === "all" || item.type === journeyFilter)
                       .map((item, index) => (
@@ -677,16 +823,16 @@ export default function AboutPage({ onOpenApp }: AboutPageProps) {
                         exit={{ opacity: 0, x: 50 }}
                         transition={{ delay: index * 0.15, duration: 0.4 }}
                         layout
-                        className="relative pl-16 md:pl-20"
+                        className="relative pl-10 sm:pl-16 md:pl-20"
                       >
                         {/* Timeline Node */}
                         <motion.div 
-                          className="absolute left-4 md:left-6 top-6 z-10"
+                          className="absolute left-2.5 sm:left-4 md:left-6 top-5 sm:top-6 z-10"
                           initial={{ scale: 0 }}
                           animate={{ scale: 1 }}
                           transition={{ delay: index * 0.2 + 0.2, type: "spring", stiffness: 200 }}
                         >
-                          <div className={`w-4 h-4 rounded-full border-2 shadow-lg ${
+                          <div className={`w-3 h-3 sm:w-4 sm:h-4 rounded-full border-2 shadow-lg ${
                             item.type === "education" 
                               ? "bg-aurora-coral border-aurora-coral/60" 
                               : item.type === "work" 
@@ -711,12 +857,12 @@ export default function AboutPage({ onOpenApp }: AboutPageProps) {
                         <motion.div
                           whileHover={{ scale: 1.01, x: 4 }}
                           transition={{ type: "spring", stiffness: 300 }}
-                          className="group bg-gradient-to-br from-gray-900/90 via-gray-900/80 to-black/90 backdrop-blur-sm rounded-2xl p-6 border border-gray-800 hover:border-aurora-orange/40 shadow-xl hover:shadow-aurora-orange/10 transition-all duration-300"
+                          className="group bg-gradient-to-br from-gray-900/90 via-gray-900/80 to-black/90 backdrop-blur-sm rounded-xl sm:rounded-2xl p-4 sm:p-6 border border-gray-800 hover:border-aurora-orange/40 shadow-xl hover:shadow-aurora-orange/10 transition-all duration-300"
                         >
                           {/* Organization Header */}
                           <div className="flex items-start justify-between mb-4">
-                            <div className="flex items-center gap-4">
-                              <div className={`w-12 h-12 rounded-xl flex items-center justify-center border transition-all duration-300 ${
+                            <div className="flex items-center gap-3 sm:gap-4">
+                              <div className={`w-9 h-9 sm:w-12 sm:h-12 rounded-lg sm:rounded-xl flex items-center justify-center border transition-all duration-300 [&>svg]:w-4 [&>svg]:h-4 sm:[&>svg]:w-5 sm:[&>svg]:h-5 ${
                                 item.type === "education"
                                   ? "bg-aurora-coral/10 border-aurora-coral/30 text-aurora-coral group-hover:bg-aurora-coral/20 group-hover:border-aurora-coral/50"
                                   : item.type === "work"
@@ -726,7 +872,7 @@ export default function AboutPage({ onOpenApp }: AboutPageProps) {
                                 {getJourneyIcon(item.type)}
                               </div>
                               <div>
-                                <h3 className="text-xl font-bold text-aurora-white group-hover:text-aurora-orange transition-colors duration-300">
+                                <h3 className="text-base sm:text-xl font-bold text-aurora-white group-hover:text-aurora-orange transition-colors duration-300">
                                   {item.organization}
                                 </h3>
                                 <div className="flex items-center gap-2 mt-1">
@@ -742,7 +888,7 @@ export default function AboutPage({ onOpenApp }: AboutPageProps) {
                                 </div>
                               </div>
                             </div>
-                            <ChevronRight className="w-5 h-5 text-gray-600 group-hover:text-aurora-orange group-hover:translate-x-1 transition-all duration-300" />
+                            <ChevronRight className="hidden sm:block w-5 h-5 text-gray-600 group-hover:text-aurora-orange group-hover:translate-x-1 transition-all duration-300" />
                           </div>
 
                           {/* Positions */}
@@ -753,17 +899,17 @@ export default function AboutPage({ onOpenApp }: AboutPageProps) {
                                 initial={{ opacity: 0, y: 10 }}
                                 animate={{ opacity: 1, y: 0 }}
                                 transition={{ delay: index * 0.2 + posIndex * 0.1 + 0.3 }}
-                                className="group/pos relative bg-gray-800/40 hover:bg-gray-800/70 rounded-xl p-4 border border-gray-700/50 hover:border-gray-600 transition-all duration-300 cursor-pointer"
+                                className="group/pos relative bg-gray-800/40 hover:bg-gray-800/70 rounded-lg sm:rounded-xl p-3 sm:p-4 border border-gray-700/50 hover:border-gray-600 transition-all duration-300 cursor-pointer"
                               >
-                                <div className="flex items-center justify-between mb-2">
-                                  <h4 className="font-semibold text-aurora-white group-hover/pos:text-aurora-coral transition-colors">
+                                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-2">
+                                  <h4 className="text-sm sm:text-base font-semibold text-aurora-white group-hover/pos:text-aurora-coral transition-colors">
                                     {position.title}
                                   </h4>
-                                  <span className="text-xs text-gray-400 bg-gray-900/60 px-2.5 py-1 rounded-full border border-gray-700">
+                                  <span className="self-start sm:self-auto text-xs text-gray-400 bg-gray-900/60 px-2.5 py-1 rounded-full border border-gray-700">
                                     {position.timeline}
                                   </span>
                                 </div>
-                                <p className="text-gray-400 text-sm mb-3">{position.description}</p>
+                                <p className="text-gray-400 text-xs sm:text-sm mb-3">{position.description}</p>
                                 
                                 {/* Achievements with hover reveal */}
                                 <div className="space-y-1.5">
@@ -773,7 +919,7 @@ export default function AboutPage({ onOpenApp }: AboutPageProps) {
                                       initial={{ opacity: 0, x: -10 }}
                                       animate={{ opacity: 1, x: 0 }}
                                       transition={{ delay: index * 0.2 + posIndex * 0.1 + achIndex * 0.05 + 0.4 }}
-                                      className="flex items-center gap-2 text-sm text-gray-300 group-hover/pos:text-gray-200 transition-colors"
+                                      className="flex items-center gap-2 text-xs sm:text-sm text-gray-300 group-hover/pos:text-gray-200 transition-colors"
                                     >
                                       <div className="w-1.5 h-1.5 bg-aurora-coral rounded-full shrink-0"></div>
                                       <span>{achievement}</span>
@@ -794,9 +940,9 @@ export default function AboutPage({ onOpenApp }: AboutPageProps) {
                     initial={{ opacity: 0, scale: 0 }}
                     animate={{ opacity: 1, scale: 1 }}
                     transition={{ delay: journey.length * 0.2 + 0.3 }}
-                    className="absolute left-4 md:left-6 bottom-0 translate-y-4"
+                    className="absolute left-2.5 sm:left-4 md:left-6 bottom-0 translate-y-4"
                   >
-                    <div className="w-4 h-4 rounded-full bg-gray-700 border-2 border-gray-600 flex items-center justify-center">
+                    <div className="w-3 h-3 sm:w-4 sm:h-4 rounded-full bg-gray-700 border-2 border-gray-600 flex items-center justify-center">
                       <div className="w-1.5 h-1.5 rounded-full bg-gray-500"></div>
                     </div>
                   </motion.div>
@@ -807,88 +953,88 @@ export default function AboutPage({ onOpenApp }: AboutPageProps) {
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: journey.length * 0.2 + 0.5 }}
-                  className="mt-12 text-center"
+                  className="mt-10 sm:mt-12 text-center"
                 >
-                  <p className="text-gray-400 mb-4">Want to be part of my journey?</p>
+                  <p className="text-sm sm:text-base text-gray-400 mb-4">Want to be part of my journey?</p>
                   <button
-                    onClick={() => setActiveTab("contact")}
-                    className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-aurora-orange to-aurora-coral text-black font-semibold rounded-xl hover:shadow-lg hover:shadow-aurora-orange/25 transition-all duration-300"
+                    onClick={() => scrollToSection("contact")}
+                    className="inline-flex items-center gap-2 px-5 sm:px-6 py-2.5 sm:py-3 bg-gradient-to-r from-aurora-orange to-aurora-coral text-black text-sm sm:text-base font-semibold rounded-lg sm:rounded-xl hover:shadow-lg hover:shadow-aurora-orange/25 transition-all duration-300"
                   >
                     <Mail className="w-4 h-4" />
                     Let's Connect
                   </button>
                 </motion.div>
               </div>
-            )}
+            </section>
 
-            {activeTab === "projects" && (
+          <section ref={setSectionRef("projects")} id="about-projects" className="scroll-mt-6">
               <motion.div
                 initial={{ opacity: 0, scale: 0.95 }}
                 animate={{ opacity: 1, scale: 1 }}
                 className="max-w-2xl mx-auto text-center"
               >
-                <div className="bg-gradient-to-br from-black/90 via-gray-900/90 to-black/90 rounded-3xl p-12 text-aurora-white shadow-2xl border border-aurora-orange/40">
-                  <Code className="w-20 h-20 mx-auto mb-6 text-aurora-orange" />
-                  <h2 className="text-3xl font-bold mb-4">Explore My Projects</h2>
-                  <p className="text-lg text-gray-300 mb-8">
+                <div className="bg-gradient-to-br from-black/90 via-gray-900/90 to-black/90 rounded-xl sm:rounded-3xl p-5 sm:p-12 text-aurora-white shadow-2xl border border-aurora-orange/40">
+                  <Code className="w-12 h-12 sm:w-20 sm:h-20 mx-auto mb-4 sm:mb-6 text-aurora-orange" />
+                  <h2 className="text-xl sm:text-3xl font-bold mb-3 sm:mb-4">Explore My Projects</h2>
+                  <p className="text-sm sm:text-lg text-gray-300 mb-6 sm:mb-8">
                     Discover the innovative solutions I've built, from cybersecurity tools to full-stack applications.
                   </p>
                   <motion.button
                     onClick={() => onOpenApp?.("projects")}
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
-                    className="bg-gradient-to-r from-aurora-orange to-aurora-coral text-black px-8 py-4 rounded-2xl font-bold text-lg shadow-lg hover:shadow-xl transition-all duration-200 flex items-center space-x-2 mx-auto border border-aurora-orange/50"
+                    className="bg-gradient-to-r from-aurora-orange to-aurora-coral text-black px-5 sm:px-8 py-3 sm:py-4 rounded-lg sm:rounded-2xl font-bold text-sm sm:text-lg shadow-lg hover:shadow-xl transition-all duration-200 flex items-center space-x-2 mx-auto border border-aurora-orange/50"
                   >
                     <span>View Projects</span>
                     <ExternalLink className="w-5 h-5" />
                   </motion.button>
                 </div>
               </motion.div>
-            )}
+            </section>
 
-            {activeTab === "awards" && (
+          <section ref={setSectionRef("awards")} id="about-awards" className="scroll-mt-6">
               <motion.div
                 initial={{ opacity: 0, scale: 0.95 }}
                 animate={{ opacity: 1, scale: 1 }}
                 className="max-w-2xl mx-auto text-center"
               >
-                <div className="bg-gradient-to-br from-black/90 via-gray-900/90 to-black/90 rounded-3xl p-12 text-aurora-white shadow-2xl border border-aurora-coral/40">
-                  <Trophy className="w-20 h-20 mx-auto mb-6 text-aurora-orange" />
-                  <h2 className="text-3xl font-bold mb-4">Awards & Achievements</h2>
-                  <p className="text-lg text-gray-300 mb-8">
+                <div className="bg-gradient-to-br from-black/90 via-gray-900/90 to-black/90 rounded-xl sm:rounded-3xl p-5 sm:p-12 text-aurora-white shadow-2xl border border-aurora-coral/40">
+                  <Trophy className="w-12 h-12 sm:w-20 sm:h-20 mx-auto mb-4 sm:mb-6 text-aurora-orange" />
+                  <h2 className="text-xl sm:text-3xl font-bold mb-3 sm:mb-4">Awards & Achievements</h2>
+                  <p className="text-sm sm:text-lg text-gray-300 mb-6 sm:mb-8">
                     Explore my awards, certifications, and recognitions from competitions, academics, and professional development.
                   </p>
                   <motion.button
                     onClick={() => onOpenApp?.("awards")}
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
-                    className="bg-gradient-to-r from-aurora-orange to-aurora-coral text-black px-8 py-4 rounded-2xl font-bold text-lg shadow-lg hover:shadow-xl transition-all duration-200 flex items-center space-x-2 mx-auto border border-aurora-orange/50"
+                    className="bg-gradient-to-r from-aurora-orange to-aurora-coral text-black px-5 sm:px-8 py-3 sm:py-4 rounded-lg sm:rounded-2xl font-bold text-sm sm:text-lg shadow-lg hover:shadow-xl transition-all duration-200 flex items-center space-x-2 mx-auto border border-aurora-orange/50"
                   >
                     <span>View Awards</span>
                     <ExternalLink className="w-5 h-5" />
                   </motion.button>
                 </div>
               </motion.div>
-            )}
+            </section>
 
-            {activeTab === "resume" && (
+          <section ref={setSectionRef("resume")} id="about-resume" className="scroll-mt-6">
               <motion.div
                 initial={{ opacity: 0, scale: 0.95 }}
                 animate={{ opacity: 1, scale: 1 }}
                 className="max-w-2xl mx-auto text-center"
               >
-                <div className="bg-gradient-to-br from-black/90 via-gray-900/90 to-black/90 rounded-3xl p-12 text-aurora-white shadow-2xl border border-aurora-coral/40">
-                  <FileText className="w-20 h-20 mx-auto mb-6 text-aurora-orange" />
-                  <h2 className="text-3xl font-bold mb-4">Download My Resume</h2>
-                  <p className="text-lg text-gray-300 mb-8">
+                <div className="bg-gradient-to-br from-black/90 via-gray-900/90 to-black/90 rounded-xl sm:rounded-3xl p-5 sm:p-12 text-aurora-white shadow-2xl border border-aurora-coral/40">
+                  <FileText className="w-12 h-12 sm:w-20 sm:h-20 mx-auto mb-4 sm:mb-6 text-aurora-orange" />
+                  <h2 className="text-xl sm:text-3xl font-bold mb-3 sm:mb-4">Download My Resume</h2>
+                  <p className="text-sm sm:text-lg text-gray-300 mb-6 sm:mb-8">
                     Get a comprehensive overview of my experience, skills, and achievements in a professional format.
                   </p>
-                  <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                  <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center">
                     <motion.button
                       onClick={() => onOpenApp?.("resume")}
                       whileHover={{ scale: 1.05 }}
                       whileTap={{ scale: 0.95 }}
-                      className="bg-gradient-to-r from-aurora-orange to-aurora-coral text-black px-8 py-4 rounded-2xl font-bold text-lg shadow-lg hover:shadow-xl transition-all duration-200 flex items-center space-x-2 justify-center border border-aurora-orange/50"
+                      className="bg-gradient-to-r from-aurora-orange to-aurora-coral text-black px-5 sm:px-8 py-3 sm:py-4 rounded-lg sm:rounded-2xl font-bold text-sm sm:text-lg shadow-lg hover:shadow-xl transition-all duration-200 flex items-center space-x-2 justify-center border border-aurora-orange/50"
                     >
                       <span>View Resume</span>
                       <ExternalLink className="w-5 h-5" />
@@ -898,7 +1044,7 @@ export default function AboutPage({ onOpenApp }: AboutPageProps) {
                       download="Rakabima_CV.pdf"
                       whileHover={{ scale: 1.05 }}
                       whileTap={{ scale: 0.95 }}
-                      className="bg-gray-800 text-aurora-white px-8 py-4 rounded-2xl font-bold text-lg shadow-lg hover:shadow-xl transition-all duration-200 flex items-center space-x-2 justify-center border border-aurora-orange/30 hover:border-aurora-orange/60"
+                      className="bg-gray-800 text-aurora-white px-5 sm:px-8 py-3 sm:py-4 rounded-lg sm:rounded-2xl font-bold text-sm sm:text-lg shadow-lg hover:shadow-xl transition-all duration-200 flex items-center space-x-2 justify-center border border-aurora-orange/30 hover:border-aurora-orange/60"
                     >
                       <FileText className="w-5 h-5" />
                       <span>Download PDF</span>
@@ -906,34 +1052,33 @@ export default function AboutPage({ onOpenApp }: AboutPageProps) {
                   </div>
                 </div>
               </motion.div>
-            )}
+            </section>
 
-            {activeTab === "contact" && (
+          <section ref={setSectionRef("contact")} id="about-contact" className="scroll-mt-6">
               <motion.div
                 initial={{ opacity: 0, scale: 0.95 }}
                 animate={{ opacity: 1, scale: 1 }}
                 className="max-w-2xl mx-auto text-center"
               >
-                <div className="bg-gradient-to-br from-black/90 via-gray-900/90 to-black/90 rounded-3xl p-12 text-aurora-white shadow-2xl border border-aurora-orange/40">
-                  <Mail className="w-20 h-20 mx-auto mb-6 text-aurora-orange" />
-                  <h2 className="text-3xl font-bold mb-4">Let's Connect</h2>
-                  <p className="text-lg text-gray-300 mb-8">
+                <div className="bg-gradient-to-br from-black/90 via-gray-900/90 to-black/90 rounded-xl sm:rounded-3xl p-5 sm:p-12 text-aurora-white shadow-2xl border border-aurora-orange/40">
+                  <Mail className="w-12 h-12 sm:w-20 sm:h-20 mx-auto mb-4 sm:mb-6 text-aurora-orange" />
+                  <h2 className="text-xl sm:text-3xl font-bold mb-3 sm:mb-4">Let's Connect</h2>
+                  <p className="text-sm sm:text-lg text-gray-300 mb-6 sm:mb-8">
                     Ready to discuss opportunities, collaborations, or just chat about technology and cybersecurity.
                   </p>
                   <motion.button
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
                     onClick={() => onOpenApp?.('email')}
-                    className="bg-gradient-to-r from-aurora-orange to-aurora-coral text-black px-8 py-4 rounded-2xl font-bold text-lg shadow-lg hover:shadow-xl transition-all duration-200 flex items-center space-x-2 mx-auto border border-aurora-orange/50"
+                    className="bg-gradient-to-r from-aurora-orange to-aurora-coral text-black px-5 sm:px-8 py-3 sm:py-4 rounded-lg sm:rounded-2xl font-bold text-sm sm:text-lg shadow-lg hover:shadow-xl transition-all duration-200 flex items-center space-x-2 mx-auto border border-aurora-orange/50"
                   >
                     <span>Send Message</span>
                     <ExternalLink className="w-5 h-5" />
                   </motion.button>
                 </div>
               </motion.div>
-            )}
+            </section>
           </motion.div>
-        </AnimatePresence>
       </div>
     </div>
   )

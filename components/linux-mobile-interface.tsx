@@ -18,6 +18,7 @@ import {
   Home
 } from 'lucide-react'
 import { useNotifications, Notification } from "@/contexts/notification-context"
+import HorizontalArrowScroller from "./ui/horizontal-arrow-scroller"
 
 interface App {
   id: string
@@ -477,13 +478,15 @@ export default function LinuxMobileInterface({
                 ref={appContentRef}
                 onScroll={handleAppScroll}
                 onTouchMove={handleBottomSwipe}
-                className="flex-1 overflow-y-auto overscroll-contain bg-gradient-to-b from-[#0d0d14] to-[#0a0a0f] relative" 
+                className={`flex-1 overscroll-contain bg-gradient-to-b from-[#0d0d14] to-[#0a0a0f] relative ${
+                  activeAppData.id === "about" ? "overflow-hidden" : "overflow-y-auto"
+                }`}
                 style={{ WebkitOverflowScrolling: 'touch' }}
               >
                 {activeAppData.component}
                 
                 {/* Bottom swipe area indicator - always visible when dock is hidden */}
-                {!showDockInApp && (
+                {!showDockInApp && activeAppData.id !== "about" && (
                   <div 
                     className="sticky bottom-0 left-0 right-0 h-8 flex justify-center items-end pb-1 pointer-events-none"
                     style={{ background: 'linear-gradient(to top, rgba(10,10,15,0.9), transparent)' }}
@@ -841,9 +844,9 @@ export default function LinuxMobileInterface({
               </div>
 
               {/* App Cards */}
-              <div className="flex-1 px-4 overflow-x-auto overflow-y-hidden">
+              <div className="flex-1 min-h-0">
                 {openApps.length === 0 ? (
-                  <div className="flex flex-col items-center justify-center h-full text-center">
+                  <div className="flex flex-col items-center justify-center h-full px-4 text-center">
                     <div className="w-20 h-20 bg-aurora-orange/10 rounded-full flex items-center justify-center mb-4">
                       <Grid3X3 className="w-10 h-10 text-aurora-orange/50" />
                     </div>
@@ -851,69 +854,74 @@ export default function LinuxMobileInterface({
                     <p className="text-aurora-white/30 text-sm mt-1">Open an app to see it here</p>
                   </div>
                 ) : (
-                  <div className="flex space-x-4 h-full items-center pb-20">
+                  <HorizontalArrowScroller
+                    ariaLabel="recent apps"
+                    className="h-full"
+                    contentClassName="flex space-x-4 h-full items-center px-12 pb-20"
+                    scrollStep={280}
+                  >
                     {openApps.map((app, index) => (
-                      <motion.div
-                        key={app.id}
-                        className="flex-shrink-0 w-64"
-                        initial={{ opacity: 0, scale: 0.8, y: 50 }}
-                        animate={{ opacity: 1, scale: 1, y: 0 }}
-                        exit={{ opacity: 0, scale: 0.8, y: 50 }}
-                        transition={{ delay: index * 0.1 }}
-                        drag="y"
-                        dragConstraints={{ top: 0, bottom: 0 }}
-                        onDragEnd={(e, info) => {
-                          if (info.offset.y < -100) {
-                            handleAppSwipeClose(app.id)
-                          }
-                        }}
-                      >
-                        {/* App Preview Card */}
-                        <motion.button
-                          className="w-full"
-                          onClick={() => {
-                            bringToFront(app.id)
-                            setShowAppSwitcher(false)
+                        <motion.div
+                          key={app.id}
+                          className="flex-shrink-0 w-64"
+                          initial={{ opacity: 0, scale: 0.8, y: 50 }}
+                          animate={{ opacity: 1, scale: 1, y: 0 }}
+                          exit={{ opacity: 0, scale: 0.8, y: 50 }}
+                          transition={{ delay: index * 0.1 }}
+                          drag="y"
+                          dragConstraints={{ top: 0, bottom: 0 }}
+                          onDragEnd={(e, info) => {
+                            if (info.offset.y < -100) {
+                              handleAppSwipeClose(app.id)
+                            }
                           }}
-                          whileTap={{ scale: 0.95 }}
                         >
-                          <div className="bg-[#1a1a24] rounded-3xl overflow-hidden border border-aurora-orange/20 shadow-2xl">
-                            {/* App Header in card */}
-                            <div className="h-10 bg-[#0d0d14] flex items-center px-3 space-x-2">
-                              <div className="w-5 h-5 text-aurora-orange">
-                                {app.icon}
+                          {/* App Preview Card */}
+                          <motion.button
+                            className="w-full"
+                            onClick={() => {
+                              bringToFront(app.id)
+                              setShowAppSwitcher(false)
+                            }}
+                            whileTap={{ scale: 0.95 }}
+                          >
+                            <div className="bg-[#1a1a24] rounded-3xl overflow-hidden border border-aurora-orange/20 shadow-2xl">
+                              {/* App Header in card */}
+                              <div className="h-10 bg-[#0d0d14] flex items-center px-3 space-x-2">
+                                <div className="w-5 h-5 text-aurora-orange">
+                                  {app.icon}
+                                </div>
+                                <span className="text-aurora-white text-sm font-medium truncate">
+                                  {app.title}
+                                </span>
                               </div>
-                              <span className="text-aurora-white text-sm font-medium truncate">
-                                {app.title}
-                              </span>
-                            </div>
-                            
-                            {/* Preview placeholder */}
-                            <div className="h-80 bg-gradient-to-b from-[#0d0d14] to-[#0a0a0f] flex items-center justify-center">
-                              <div className="w-16 h-16 text-aurora-orange/30">
-                                {app.icon}
+                              
+                              {/* Preview placeholder */}
+                              <div className="h-80 bg-gradient-to-b from-[#0d0d14] to-[#0a0a0f] flex items-center justify-center">
+                                <div className="w-16 h-16 text-aurora-orange/30">
+                                  {app.icon}
+                                </div>
                               </div>
                             </div>
-                          </div>
-                        </motion.button>
+                          </motion.button>
 
-                        {/* Close button */}
-                        <motion.button
-                          className="mt-3 mx-auto flex items-center space-x-2 px-4 py-2 bg-red-500/20 rounded-full"
-                          onClick={() => handleAppSwipeClose(app.id)}
-                          whileTap={{ scale: 0.9 }}
-                        >
-                          <X className="w-4 h-4 text-red-400" />
-                          <span className="text-red-400 text-sm">Close</span>
-                        </motion.button>
+                          {/* Close button */}
+                          <motion.button
+                            className="mt-3 mx-auto flex items-center space-x-2 px-4 py-2 bg-red-500/20 rounded-full"
+                            onClick={() => handleAppSwipeClose(app.id)}
+                            whileTap={{ scale: 0.9 }}
+                          >
+                            <X className="w-4 h-4 text-red-400" />
+                            <span className="text-red-400 text-sm">Close</span>
+                          </motion.button>
 
-                        {/* Swipe hint */}
-                        <p className="text-center text-aurora-white/30 text-xs mt-2">
-                          Swipe up to close
-                        </p>
-                      </motion.div>
-                    ))}
-                  </div>
+                          {/* Swipe hint */}
+                          <p className="text-center text-aurora-white/30 text-xs mt-2">
+                            Swipe up to close
+                          </p>
+                        </motion.div>
+                      ))}
+                  </HorizontalArrowScroller>
                 )}
               </div>
 
@@ -1039,7 +1047,11 @@ export default function LinuxMobileInterface({
               {openApps.length > 0 && (
                 <div className="border-t border-aurora-orange/20 p-4 bg-[#0d0d14]/80 flex-shrink-0">
                   <h3 className="text-aurora-white/50 text-xs font-medium mb-3 px-2">RUNNING</h3>
-                  <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-none" style={{ WebkitOverflowScrolling: 'touch' as const }}>
+                  <HorizontalArrowScroller
+                    ariaLabel="running apps"
+                    contentClassName="flex gap-2 pb-2 px-9"
+                    scrollStep={180}
+                  >
                     {openApps.map((app) => (
                       <motion.button
                         key={app.id}
@@ -1058,7 +1070,7 @@ export default function LinuxMobileInterface({
                         <span className="truncate max-w-[100px]">{app.title}</span>
                       </motion.button>
                     ))}
-                  </div>
+                  </HorizontalArrowScroller>
                 </div>
               )}
             </div>
